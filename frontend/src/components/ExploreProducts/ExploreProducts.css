@@ -1,0 +1,101 @@
+.Explore-products {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.Explore-products h1 {
+    color: #262626;
+    font-weight: 500;
+}
+
+.Explore-products-text {
+    max-width: 60%;
+    color: #808080;
+    line-height: 1.6;
+}
+
+/* Product list */
+.Explore-products-list {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+    text-align: center;
+    margin: 20px 0;
+    overflow-x: scroll;
+}
+
+.Explore-products-list::-webkit-scrollbar {
+    display: none;
+}
+
+/* Product card */
+.Explore-products-list-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* Circle wrapper */
+.circle-image {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Image inside circle */
+.circle-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+}
+
+.circle-image img:hover {
+    transform: scale(1.05);
+}
+
+/* Product name */
+.Explore-products-list-items p {
+    margin-top: 10px;
+    color: #747474;
+    font-size: max(1.4vw, 16px);
+}
+
+/* Divider */
+.Explore-products hr {
+    margin: 10px 0;
+    height: 2px;
+    background-color: #e2e2e2;
+    border: none;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .Explore-products-text {
+        max-width: 100%;
+    }
+
+    .circle-image {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+.Explore-products-list .circle-image .active {
+    border: 4px solid tomato;
+    padding: 2px;
+}
+
+@media (max-width:1050px) {
+    .Explore-products-text{
+        max-width: 100%;
+        font-size: 14px;
+    }
+}

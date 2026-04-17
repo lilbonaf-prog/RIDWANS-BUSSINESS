@@ -1,0 +1,95 @@
+/* Fullscreen overlay behind the popup */
+.login-popup {
+    position: fixed;          /* stays fixed to viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #00000090; /* semi-transparent black */
+    display: grid;
+    place-items: center;      /* centers the popup container */
+    z-index: 999;             /* ensures it's above navbar/footer */
+}
+
+/* Popup box itself */
+.login-popup-container {
+    width: max(23vw, 330px);
+    color: #808080;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 25px 30px;
+    border-radius: 8px;
+    font-size: 14px;
+    animation: fadeIn 0.5s ease-in-out;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25); /* subtle shadow */
+}
+
+/* Title bar */
+.login-popup-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: black;
+}
+
+.login-popup-title img {
+    width: 16px;
+    cursor: pointer;
+}
+
+/* Inputs */
+.login-popup-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.login-popup-inputs input {
+    outline: none;
+    border: 1px solid #c9c9c9;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Button */
+.login-popup-container button {
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    color: white;
+    background-color: tomato;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-popup-container button:hover {
+    background-color: #e04a2f; /* darker tomato on hover */
+}
+
+/* Terms */
+.login-popup-condition {
+    display: flex;
+    align-items: start;
+    gap: 8px;
+    margin-top: -15px;    
+}
+
+.login-popup-condition input {
+    margin-top: 5px;
+}
+
+/* Toggle link */
+.login-popup p span {
+    color: tomato;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}

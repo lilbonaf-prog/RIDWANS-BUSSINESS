@@ -22,23 +22,33 @@ const Orders = ({ url }) => {
     }
   };
 
-  const updateOrderStatus = async (orderId, status) => {
-    try {
-      const response = await axios.post(url + "/api/order/update", {
-        orderId,
-        status
-      });
-      if (response.data.success) {
-        toast.success("Order status updated");
-        fetchAllOrders();
-      } else {
-        toast.error("Failed to update status");
-      }
-    } catch (err) {
-      console.error("Update order error:", err.message);
-      toast.error("Server error");
+  // const updateOrderStatus = async (orderId, status) => {
+  //   try {
+  //     const response = await axios.post(url + "/api/order/update", {
+  //       orderId,
+  //       status
+  //     });
+  //     if (response.data.success) {
+  //       toast.success("Order status updated");
+  //       fetchAllOrders();
+  //     } else {
+  //       toast.error("Failed to update status");
+  //     }
+  //   } catch (err) {
+  //     console.error("Update order error:", err.message);
+  //     toast.error("Server error");
+  //   }
+  // };
+
+  const statusHandler = async (event,orderId) => {
+    const response = await axios.post(url+"/api/order/status",{
+      orderId,
+      status:event.target.value
+    })
+    if (response.data.success) {
+      await fetchAllOrders();
     }
-  };
+  }
 
   useEffect(() => {
     fetchAllOrders();
@@ -73,7 +83,7 @@ const Orders = ({ url }) => {
             <p>GHS {order.amount}</p>
             <select
               value={order.status}
-              onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+              onChange={(event) => statusHandler(event,order._id)}
             >
               <option value="Product Processing">Product Processing</option>
               <option value="Out for delivery">Out for delivery</option>

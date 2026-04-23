@@ -34,7 +34,8 @@ export const placeOrder = async (req, res) => {
         email,
         amount: totalAmount * 100,
         currency: "GHS",
-        callback_url: "http://localhost:4000/api/order/verify"
+        // ✅ Redirect user to frontend after payment
+         callback_url: "http://localhost:4000/api/order/verify"
       },
       {
         headers: {
@@ -42,7 +43,12 @@ export const placeOrder = async (req, res) => {
           "Content-Type": "application/json"
         }
       }
+
     );
+
+
+
+
 
     // ✅ Save order with enriched items
     const newOrder = new orderModel({
@@ -50,11 +56,12 @@ export const placeOrder = async (req, res) => {
       email,
       items: enrichedItems,
       address,
-      totalAmount,
+      amount: totalAmount, // ✅ use "amount" to match schema
       reference: response.data.data.reference,
       status: "Pending",
       payment: false
     });
+
     await newOrder.save();
 
     res.json({
@@ -76,13 +83,17 @@ export const verifyOrder = async (req, res) => {
       `https://api.paystack.co/transaction/verify/${reference}`,
       { headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` } }
     );
+    
 
     if (response.data.data.status === "success") {
-      // ✅ Mark order as paid
+      // ✅ Convert amount from pesewas/kobo to main currency unit
+      const amountPaid = response.data.data.amount / 100;
+
+      // ✅ Mark order as paid and update amount
       const order = await orderModel.findOneAndUpdate(
         { reference },
-        { status: "Paid", payment: true },
-        { new: true }
+        { status: "Paid", payment: true, amount: amountPaid },
+        { returnDocument: 'after' }
       );
 
       if (!order) {
@@ -101,7 +112,7 @@ export const verifyOrder = async (req, res) => {
       const order = await orderModel.findOneAndUpdate(
         { reference },
         { status: "Failed", payment: false },
-        { new: true }
+         { returnDocument: 'after' }
       );
 
       return res.json({ success: false, order });
@@ -112,10 +123,14 @@ export const verifyOrder = async (req, res) => {
   }
 };
 
+
 // User orders for frontend
 export const userOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({ userId: req.user.id });
+        // 🔍 Debug log
+    console.log("Orders fetched for user:", orders);
+
     res.json({ success: true, data: { orders } });
   } catch (error) {
     console.log(error);
@@ -133,3 +148,15 @@ export const listOrders = async (req, res) => {
     res.json({ success: false, message: "Error" });
   }
 };
+
+// api for updating order status
+export const updateStatus = async (req, res) => {
+  try {
+    await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status })
+    res.json({ success: true, message: "Status Updated" })
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Errror" })
+
+  }
+}

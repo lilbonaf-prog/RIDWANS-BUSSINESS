@@ -2,10 +2,12 @@ import express from "express";
 import axios from "axios";
 import orderModel from "../models/orderModel.js";
 import cartModel from "../models/cartModel.js"; // ✅ import cart model
-import { verifyOrder, userOrders, listOrders } from "../controllers/orderController.js";
+import { verifyOrder, userOrders, listOrders, updateStatus } from "../controllers/orderController.js";
 import authMiddleware from "../middleware/auth.js";
 
 const router = express.Router();
+
+router.post('/status',updateStatus)
 
 // list oders in admin panel
 router.get('/list',listOrders)
@@ -30,7 +32,7 @@ router.post("/place", authMiddleware, async (req, res) => {
         email,
         amount: totalAmount * 100, // Paystack expects amount in kobo/pesewas
         currency: "GHS",
-        callback_url: "http://localhost:5173/payment-success"
+        callback_url: "http://localhost:5174/payment-success"
       },
       {
         headers: {
@@ -93,18 +95,26 @@ router.get("/verify", async (req, res) => {
       }
     );
 
-    if (response.data.data.status === "success") {
+        if (response.data.data.status === "success") {
+      // ✅ Mark order as paid
       await orderModel.findOneAndUpdate(
         { reference },
-        { status: "Paid", payment: true }
+        { status: "Paid", payment: true },
+        { returnDocument: "after" } // modern option
       );
-      return res.redirect(`http://localhost:5173/payment-success?reference=${reference}`);
+
+      // ✅ Redirect to payment-success page
+      return res.redirect(`http://localhost:5174/payment-success?reference=${reference}`);
     } else {
+      // ❌ Mark order as failed
       await orderModel.findOneAndUpdate(
         { reference },
-        { status: "Failed", payment: false }
+        { status: "Failed", payment: false },
+        { returnDocument: "after" }
       );
-      return res.redirect("http://localhost:5173/payment-success?reference=failed");
+
+      // ✅ Redirect to payment-success page with failure flag
+      return res.redirect("http://localhost:5174/payment-success?reference=failed");
     }
   } catch (error) {
     console.error("Verification error:", error.response?.data || error.message);

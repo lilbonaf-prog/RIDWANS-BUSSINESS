@@ -1,6 +1,7 @@
 import React from 'react'
 import './Footer.css'
 import { assets } from '../../assets/assets'
+import { Link } from 'react-router-dom'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -8,32 +9,49 @@ const Footer = () => {
   return (
     <div className='footer' id='footer'>
       <div className="footer-content">
+        {/* Left section */}
         <div className="footer-content-left">
           <img src={assets.logo} className='Company-Logo' alt="Company Logo" />
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fuga minus numquam impedit minima eaque non dolorem quas suscipit? Mollitia, animi facilis! Obcaecati perspiciatis distinctio tempora aspernatur praesentium tempore soluta molestiae.</p>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
+            Fuga minus numquam impedit minima eaque non dolorem quas suscipit? 
+            Mollitia, animi facilis! Obcaecati perspiciatis distinctio tempora 
+            aspernatur praesentium tempore soluta molestiae.
+          </p>
           <div className="footer-social-icons">
-            <img src={assets.facebook_icon} alt="Facebook" />
-            <img src={assets.twitter_icon} alt="Twitter" />
-            <img src={assets.linkedin_icon} alt="LinkedIn" />
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <img src={assets.facebook_icon} alt="Facebook" />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+              <img src={assets.twitter_icon} alt="Twitter" />
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <img src={assets.linkedin_icon} alt="LinkedIn" />
+            </a>
           </div>
         </div>
+
+        {/* Center section */}
         <div className="footer-content-center">
           <h2>BUSINESS</h2>
           <ul>
-            <li>Home</li>
-            <li>About us</li>
-            <li>Login</li>
-            <li>Privacy policy</li>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/about">About us</Link></li>
+            <li><Link to="/login">Login</Link></li>
+            <li><Link to="/privacy">Privacy policy</Link></li>
           </ul>
         </div>
+
+        {/* Right section */}
         <div className="footer-content-right">
           <h2>GET IN TOUCH</h2>
           <ul>
-            <li>+233 550 652 139</li>
-            <li>example@gmail.com</li>
+            <li><a href="tel:+233550652139">+233 550 652 139</a></li>
+            <li><a href="mailto:example@gmail.com">example@gmail.com</a></li>
           </ul>
         </div>
       </div>
+
       <hr />
       <p className="footer-copyright">
         © {currentYear} RIDWAN'S BUSINESS. All rights reserved.

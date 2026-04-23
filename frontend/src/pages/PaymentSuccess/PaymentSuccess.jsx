@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // ✅ import navigation hook
+import { useNavigate } from "react-router-dom";
 import "./PaymentSuccess.css";
 
 const PaymentSuccess = () => {
   const [status, setStatus] = useState("Verifying payment...");
   const [order, setOrder] = useState(null);
+  const [countdown, setCountdown] = useState(15); // ✅ 15 seconds countdown
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,8 +32,16 @@ const PaymentSuccess = () => {
             setStatus("✅ Payment successful! Thank you for your order.");
             setOrder(response.data.order);
 
-            // ✅ Optional auto-redirect after 5 seconds
-            setTimeout(() => navigate("/my-orders"), 5000);
+            // ✅ Start countdown
+            const interval = setInterval(() => {
+              setCountdown(prev => {
+                if (prev <= 1) {
+                  clearInterval(interval);
+                  navigate("/myorders"); // redirect when countdown ends
+                }
+                return prev - 1;
+              });
+            }, 1000);
           } else {
             setStatus("❌ Payment not successful. Please try again.");
           }
@@ -58,7 +67,7 @@ const PaymentSuccess = () => {
           <h3>Order Summary</h3>
           <p><strong>Order ID:</strong> {order._id}</p>
           <p><strong>Status:</strong> {order.status}</p>
-          <p><strong>Total Amount:</strong> GH₵{order.totalAmount}</p>
+          <p><strong>Total Amount:</strong> GH₵{order.amount}</p>
 
           <h4>Items:</h4>
           <ul>
@@ -80,6 +89,11 @@ const PaymentSuccess = () => {
               {order.address.notes && <p><strong>Notes:</strong> {order.address.notes}</p>}
             </div>
           )}
+
+          {/* ✅ Countdown message */}
+          <p className="countdown-text">
+            Redirecting to My Orders in <strong>{countdown}</strong> seconds...
+          </p>
 
           {/* ✅ Navigation buttons */}
           <div className="actions">

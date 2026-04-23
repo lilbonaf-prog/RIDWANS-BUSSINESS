@@ -118,3 +118,102 @@
 .btn-home:hover {
   background: #219150;
 }
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+/* ✅ Shared animation setup */
+.btn-orders,
+.btn-home {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 0.8s ease forwards;
+}
+
+/* ✅ Staggered entrance */
+.btn-home {
+  animation-delay: 0.2s; /* first button appears slightly earlier */
+}
+
+.btn-orders {
+  animation-delay: 0.6s; /* second button appears later */
+}
+
+.btn-orders {
+  display: inline-block;
+  padding: 0.8rem 1.5rem;
+  background: #3498db;        /* Blue background */
+  color: #fff;
+  font-weight: bold;
+  border-radius: 6px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-orders:hover {
+  background: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.btn-orders:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ✅ Responsive stacking on mobile */
+@media (max-width: 600px) {
+  .actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-orders,
+  .btn-home {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ✨ Animation keyframes */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.countdown-text {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #27ae60;              /* ✅ Green for success */
+  text-align: center;
+  animation: fadeIn 0.8s ease; /* ✅ Smooth fade-in */
+}
+
+.countdown-text strong {
+  color: #2c3e50;              /* ✅ Darker highlight for the number */
+}
+
+/* ✨ Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

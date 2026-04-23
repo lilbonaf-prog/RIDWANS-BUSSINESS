@@ -14,6 +14,7 @@ import PaymentSuccess from './pages/PaymentSuccess/PaymentSuccess';
 import Footer from './components/Footer/Footer';
 import LoginPopup from './components/LoginPopup/LoginPopup';
 import MyOrders from './pages/MyOrders/MyOrders';
+import PhoneDisplay from './components/PhoneDisplay/PhoneDisplay';
 // import Verify from './pages/Verify/Verify';
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
           <Route path='/order' element={<PlaceOrder />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path='/myorders' element={<MyOrders/>} />
+          <Route path="/products" element={<PhoneDisplay category="All" />} />
           
 
 

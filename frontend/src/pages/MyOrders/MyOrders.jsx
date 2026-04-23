@@ -47,15 +47,16 @@ return (
 
           {/* Amount formatted nicely */}
 <p>
-  {order.totalAmount !== undefined && !isNaN(order.totalAmount)
+  {order.amount !== undefined && !isNaN(order.amount)
     ? new Intl.NumberFormat("en-GH", {
         style: "currency",
         currency: "GHS",
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
-      }).format(Number(order.totalAmount))
+      }).format(Number(order.amount))
     : "₵0.00"}
 </p>
+
 
 
 
@@ -79,7 +80,7 @@ return (
           </p>
 
           {/* Track button */}
-          <button>Track Order</button>
+          <button onClick={fetchOrders}>Track Order</button>
         </div>
       ))}
     </div>

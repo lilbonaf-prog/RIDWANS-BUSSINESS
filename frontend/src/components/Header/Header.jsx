@@ -57,11 +57,11 @@ const Header = () => {
           transition={{ delay: 1, duration: 0.5 }}
           style={{ display: "flex", justifyContent: "center", gap: "15px", flexWrap: "wrap" }}
         >
-          <Button as={Link} to="/shop" variant="light" size="lg">
+          <Button as={Link} to="/products" variant="light" size="lg">
             Shop Now
           </Button>
-          <Button as={Link} to="/repair" variant="outline-light" size="lg">
-            Repair Now
+          <Button as={Link} to="/cart" variant="outline-light" size="lg">
+            View Cart
           </Button>
         </motion.div>
       </Container>

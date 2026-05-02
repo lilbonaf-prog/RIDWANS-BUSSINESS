@@ -3,7 +3,7 @@ import './Navbar.css'
 import { Button, Container, Form, Nav, Navbar, NavDropdown } from 'react-bootstrap'
 import { House, Person, Envelope, Heart, Cart, BagCheck, Briefcase } from 'react-bootstrap-icons'
 import { Link, useNavigate } from 'react-router-dom'
-import { StoreContext } from '../../context/storecontext';
+import { StoreContext } from '../../context/StoreContext';
 import { assets } from '../../assets/assets'
 
 const Navigationbar = ({ setShowLogin, onSearch }) => {

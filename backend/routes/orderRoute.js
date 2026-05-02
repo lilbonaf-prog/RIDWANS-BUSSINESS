@@ -18,33 +18,40 @@ router.post("/userorders", authMiddleware, userOrders);
 // ✅ Place order (requires token)
 router.post("/place", authMiddleware, async (req, res) => {
   try {
-    const { email, items, address } = req.body;
-    const userId = req.user.id; // ✅ guaranteed by authMiddleware
+    const { email, items, address, paymentMethod } = req.body; // ✅ include paymentMethod
+    const userId = req.user.id;
 
     const totalAmount = items.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
     );
 
-    const response = await axios.post(
-      "https://api.paystack.co/transaction/initialize",
-      {
-        email,
-        amount: totalAmount * 100, // Paystack expects amount in kobo/pesewas
-        currency: "GHS",
-        callback_url: "http://localhost:5174/payment-success"
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json"
+    let reference = null;
+    let authorization_url = null;
+
+    // ✅ Only initialize Paystack if Online
+    if (paymentMethod === "Online") {
+      const response = await axios.post(
+        "https://api.paystack.co/transaction/initialize",
+        {
+          email,
+          amount: totalAmount * 100,
+          currency: "GHS",
+          callback_url: "http://localhost:5174/payment-success"
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            "Content-Type": "application/json"
+          }
         }
-      }
-    );
+      );
 
-    const reference = response.data.data.reference;
+      reference = response.data.data.reference;
+      authorization_url = response.data.data.authorization_url;
+    }
 
-    // ✅ Save full order details
+    // ✅ Save order with correct paymentMethod
     const newOrder = new orderModel({
       userId,
       items,
@@ -54,30 +61,30 @@ router.post("/place", authMiddleware, async (req, res) => {
         street: address.street,
         city: address.city,
         region: address.region,
-        digitalAddress: address.digitalAddress, // GhanaPost GPS
+        digitalAddress: address.digitalAddress,
         phone: address.phone,
         email: address.email,
         notes: address.notes
       },
-      status: "Product Processing",
+      status: paymentMethod === "CashOnDelivery" ? "Pending Delivery" : "Product Processing",
       payment: false,
-      reference
+      reference,
+      paymentMethod   // ✅ now saved correctly
     });
 
     await newOrder.save();
-
-    // ✅ Clear cart in DB after placing order
     await cartModel.deleteMany({ userId });
 
     res.json({
       success: true,
-      authorization_url: response.data.data.authorization_url
+      authorization_url   // will be null for COD
     });
   } catch (error) {
-    console.error("Paystack init error:", error.response?.data || error.message);
+    console.error("Place order error:", error.response?.data || error.message);
     res.status(500).json({ success: false, message: "Payment initialization failed" });
   }
 });
+
 
 // ✅ Verify order (frontend manual call)
 router.post("/verify", verifyOrder);
@@ -119,6 +126,18 @@ router.get("/verify", async (req, res) => {
   } catch (error) {
     console.error("Verification error:", error.response?.data || error.message);
     res.status(500).send("Verification error");
+  }
+});
+
+// ✅ Delete order (admin only)
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    await orderModel.findByIdAndDelete(orderId);
+    res.json({ success: true, message: "Order deleted successfully" });
+  } catch (error) {
+    console.error("Delete order error:", error.message);
+    res.status(500).json({ success: false, message: "Failed to delete order" });
   }
 });
 

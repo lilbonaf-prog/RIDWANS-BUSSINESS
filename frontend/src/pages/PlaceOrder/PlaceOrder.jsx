@@ -16,12 +16,12 @@ const PlaceOrder = () => {
     region: '',
     digitalAddress: '',
     country: 'Ghana',
-    phone: ''
+    phone: '',
+    paymentMethod: 'Online'   // ✅ default to Online
   });
 
   const subtotal = Number(getTotalCartAmount());
-  const deliveryFee = subtotal > 0 ? 2 : 0;
-  const total = subtotal - Number(discount || 0) + deliveryFee;
+  const total = subtotal - Number(discount || 0);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,46 +29,54 @@ const PlaceOrder = () => {
 
   const handlePayment = async (e) => {
     e.preventDefault();
+
     try {
-      // Transform cartItems into schema-friendly array
       const items = Object.entries(cartItems)
         .filter(([id, qty]) => qty > 0)
         .map(([id, qty]) => {
           const product = phone_list.find((p) => p._id === id);
           return {
+            productId: id,
             name: product?.name || "Unknown",
             quantity: qty,
             price: product?.price || 0
           };
         });
 
-const address = {
-  recipientName: formData.firstName + " " + formData.lastName, // full name
-  street: formData.street,
-  city: formData.city,
-  region: formData.region,
-  digitalAddress: formData.digitalAddress, // GhanaPost GPS
-  phone: formData.phone,
-  email: formData.email,
-  country: formData.country
-};
+      const address = {
+        recipientName: formData.firstName + " " + formData.lastName,
+        street: formData.street,
+        city: formData.city,
+        region: formData.region,
+        digitalAddress: formData.digitalAddress,
+        phone: formData.phone,
+        email: formData.email,
+        country: formData.country
+      };
 
-const response = await axios.post(
-  url + "/api/order/place",
-  {
-    email: formData.email,
-    items,
-    address
-  },
-  {
-    headers: {
-      token,
-      "Content-Type": "application/json"
-    }
-  }
-);
+      const response = await axios.post(
+        url + "/api/order/place",
+        {
+          email: formData.email,
+          items,
+          address,
+          paymentMethod: formData.paymentMethod
+        },
+        {
+          headers: {
+            token,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
       if (response.data.success) {
-        window.location.href = response.data.authorization_url; // ✅ redirect to Paystack checkout
+        if (formData.paymentMethod === "CashOnDelivery") {
+          alert("Order placed successfully. Pay on delivery.");
+          navigate("/myorders");
+        } else {
+          window.location.href = response.data.authorization_url;
+        }
       } else {
         alert("Payment initialization failed");
       }
@@ -78,16 +86,15 @@ const response = await axios.post(
     }
   };
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  useEffect(()=>{
+  useEffect(() => {
     if (!token) {
-       navigate('/cart') 
+      navigate('/cart');
+    } else if (getTotalCartAmount() === 0) {
+      navigate('/cart');
     }
-    else if(getTotalCartAmount()===0){
-      navigate('/cart')
-    }
-  },[token])
+  }, [token]);
 
   return (
     <form className="place-order" onSubmit={handlePayment}>
@@ -128,14 +135,38 @@ const response = await axios.post(
           )}
           <hr />
           <div className="cart-total-details">
-            <p>Delivery fee</p>
-            <p>GH₵{deliveryFee}</p>
-          </div>
-          <hr />
-          <div className="cart-total-details">
             <b>Total</b>
             <b>GH₵{total}</b>
           </div>
+
+          {/* ✅ Payment Method Selection moved here */}
+          <hr />
+          <div className="cart-total-details">
+            <p>Payment Method</p>
+          </div>
+          <div className="payment-method-card">
+            <label>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="Online"
+                checked={formData.paymentMethod === "Online"}
+                onChange={handleChange}
+              />
+              Pay Online (Paystack) 💳
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="CashOnDelivery"
+                checked={formData.paymentMethod === "CashOnDelivery"}
+                onChange={handleChange}
+              />
+              Payment on Delivery 🚚
+            </label>
+          </div>
+
           <button type="submit">PROCEED TO PAYMENT</button>
         </div>
       </div>

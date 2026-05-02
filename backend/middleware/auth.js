@@ -10,11 +10,21 @@ const authMiddleware = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("Decoded token:", decoded);
-    req.user = { id: decoded.id }; // ✅ attach to req.user
+
+    // Attach user info to request
+    req.user = { id: decoded.id, role: decoded.role };
+
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });
   }
+};
+
+export const adminMiddleware = (req, res, next) => {
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({ message: "Access denied. Admins only." });
+  }
+  next();
 };
 
 export default authMiddleware;

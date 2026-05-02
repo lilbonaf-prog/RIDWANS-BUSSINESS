@@ -1,47 +1,208 @@
-.order-item {
-    display: grid;
-    grid-template-columns: 0.5fr 2fr 1fr 1fr 1fr;
-    align-items: start;
-    gap: 30px;
-    border: 1px solid tomato;
-    padding: 20px;
-    margin: 30px 0px;
-    font-size: 14px;
-    color: #505050;
+.order.add {
+  margin: 40px;
 }
+
+.order.add h3 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* ✅ Filter bar styling */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.filter-bar label {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.filter-bar select {
+  padding: 8px 12px;
+  border: 1px solid tomato;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  background-color: #ffe8e4;
+  transition: border-color 0.2s ease;
+}
+
+.filter-bar select:hover {
+  border-color: #ff6347;
+}
+
+/* ✅ Order list styling */
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.order-item {
+  display: grid;
+  grid-template-columns: 0.5fr 2fr 1fr 1fr 1fr;
+  align-items: start;
+  gap: 30px;
+  border: 1px solid tomato;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  font-size: 14px;
+  color: #505050;
+  background-color: #fff;
+  transition: all 0.3s ease;
+}
+
+.order-item img {
+  width: 50px;
+  height: 50px;
+}
+
 .order-item-product,
 .order-item-name {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .order-item-name {
-    margin-top: 30px;
-    margin-bottom: 5px;
-}
-.order-item-address {
-    margin-bottom: 10px;
+  margin-top: 20px;
+  margin-bottom: 5px;
 }
 
-.order-item select {
-    background-color: #ffe8e4;
-    border: 1px solid tomato;
-    width: max(10vw, 120px);
-    padding: 10px;
-    outline: none;
+.order-item-address {
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #666;
 }
-@media (max-width:1000px) {
+
+.order-item-phone {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.order-item-payment {
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 5px;
+}
+
+/* ✅ Status label highlights */
+.order-status {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-processing {
+  color: #ff9800; /* orange */
+}
+
+.status-delivery {
+  color: #2196f3; /* blue */
+}
+
+.status-delivered {
+  color: #4caf50; /* green */
+}
+
+/* ✅ Status dropdown inside each order */
+.order-item select {
+  border: 1px solid tomato;
+  border-radius: 6px;
+  width: max(10vw, 120px);
+  padding: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+/* Dropdown background changes by status */
+.status-select.status-processing {
+  background-color: #fff3e0; /* light orange */
+}
+
+.status-select.status-delivery {
+  background-color: #e3f2fd; /* light blue */
+}
+
+.status-select.status-delivered {
+  background-color: #e8f5e9; /* light green */
+}
+
+.order-item select:hover {
+  border-color: #ff6347;
+}
+
+/* ✅ Delete button */
+.delete-btn {
+  background-color: #ff4d4d;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #e60000;
+}
+
+/* ✅ Fade-out animation */
+.fade-out {
+  animation: fadeOut 0.4s forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* ✅ Responsive layout */
+@media (max-width: 1000px) {
   .order-item {
     font-size: 12px;
     grid-template-columns: 0.5fr 2fr 1fr;
-    padding: 15px 8px;
-  }
-
-  .order-item select {
-    padding: 5px;
-    font-size: 12px;
+    gap: 15px;
+    padding: 15px 10px;
   }
 
   .order-item img {
     width: 40px;
+    height: 40px;
+  }
+
+  .order-item select {
+    padding: 6px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .order-item {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    text-align: left;
+  }
+
+  .order-item select {
+    width: 100%;
+  }
+
+  .delete-btn {
+    width: 100%;
+    margin-top: 10px;
   }
 }

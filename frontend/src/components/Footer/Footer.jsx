@@ -13,10 +13,10 @@ const Footer = () => {
         <div className="footer-content-left">
           <img src={assets.logo} className='Company-Logo' alt="Company Logo" />
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
-            Fuga minus numquam impedit minima eaque non dolorem quas suscipit? 
-            Mollitia, animi facilis! Obcaecati perspiciatis distinctio tempora 
-            aspernatur praesentium tempore soluta molestiae.
+            We are committed to delivering quality products and exceptional service. 
+            Our mission is to provide innovative solutions that meet customer needs 
+            while building lasting relationships based on trust and reliability. 
+            Every order is handled with care, ensuring satisfaction from purchase to delivery.
           </p>
           <div className="footer-social-icons">
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">

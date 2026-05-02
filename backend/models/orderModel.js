@@ -22,13 +22,18 @@ const addressSchema = new mongoose.Schema({
 // Define order schema
 const orderSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  items: [itemSchema],                         // array of items
-  amount: { type: Number, required: true },    // total amount
-  address: addressSchema,                      // delivery info
-  status: { type: String, default: "Food Processing" },
+  items: [itemSchema],
+  amount: { type: Number, required: true },
+  address: addressSchema,
+  status: { type: String, default: "Product Processing" },
   date: { type: Date, default: Date.now },
   payment: { type: Boolean, default: false },
-  reference: { type: String, required: true }  // Paystack reference
+  reference: { type: String },  // ✅ make optional
+  paymentMethod: {              // ✅ new field
+    type: String,
+    enum: ["Online", "CashOnDelivery"],
+    default: "Online"
+  }
 }, { timestamps: true });
 
 const orderModel = mongoose.models.Order || mongoose.model("Order", orderSchema);

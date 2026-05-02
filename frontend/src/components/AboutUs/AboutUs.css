@@ -1,0 +1,92 @@
+.about-us {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+  color: #333;
+}
+
+/* ✅ Hero banner with overlay and animation */
+.about-us-hero {
+  position: relative;
+  background-image: url('/images/about-hero.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 250px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  overflow: hidden;
+  animation: fadeInHero 1.2s ease-in-out;
+}
+
+/* Overlay layer */
+.about-us-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.3)
+  );
+  border-radius: 10px;
+}
+
+.about-us-hero h1 {
+  position: relative;
+  color: #fff;
+  font-size: 40px;
+  font-weight: 700;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  animation: fadeInText 1.5s ease forwards;
+}
+
+/* ✅ Content card */
+.about-us-content {
+  background-color: #f9f9f9;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  line-height: 1.6;
+}
+
+.about-us-content p {
+  font-size: 16px;
+  margin-bottom: 18px;
+  text-align: justify;
+  opacity: 0; /* start hidden */
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+/* ✅ When visible */
+.about-us-content p.reveal {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* ✅ Animations */
+@keyframes fadeInHero {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInText {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

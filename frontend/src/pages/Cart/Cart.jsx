@@ -4,13 +4,13 @@ import { StoreContext } from '../../context/storecontext';
 import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
-  const { cartItems, phone_list, removeFromCart, getTotalCartAmount,url } = useContext(StoreContext);
+  const { cartItems, phone_list, removeFromCart, getTotalCartAmount, url } = useContext(StoreContext);
 
   const navigate = useNavigate();
 
+  // ✅ Subtotal and total without delivery fee
   const subtotal = getTotalCartAmount();
-  const deliveryFee = subtotal > 0 ? 2 : 0;
-  const total = subtotal + deliveryFee;
+  const total = subtotal;
 
   return (
     <div className='cart'>
@@ -33,7 +33,7 @@ const Cart = () => {
             return (
               <div key={item._id}>
                 <div className='cart-items-title cart-items-item'>
-                  <img src={url+"/images/"+item.image} alt={item.name} />
+                  <img src={url + "/images/" + item.image} alt={item.name} />
                   <p>{item.name}</p>
                   <p>GH₵{item.price}</p>
                   <p>{quantity}</p>
@@ -59,15 +59,10 @@ const Cart = () => {
           </div>
           <hr />
           <div className="cart-total-details">
-            <p>Delivery fee</p>
-            <p>GH₵{deliveryFee}</p>
-          </div>
-          <hr />
-          <div className="cart-total-details">
             <b>Total</b>
             <b>GH₵{total}</b>
           </div>
-          <button onClick={()=>navigate("/order")}>PROCEED TO CHECKOUT</button>
+          <button onClick={() => navigate("/order")}>PROCEED TO CHECKOUT</button>
         </div>
 
         {/* Promo Code aligned under remove */}

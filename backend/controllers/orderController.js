@@ -6,9 +6,9 @@ import productModel from "../models/productModel.js"; // ✅ import product mode
 // Place order (initialize Paystack payment)
 export const placeOrder = async (req, res) => {
   try {
-    const { email, items, address } = req.body;
 
-    // ✅ Enrich items with product details from DB
+    const { email, items, address, paymentMethod } = req.body;
+
     const enrichedItems = await Promise.all(
       items.map(async (item) => {
         const product = await productModel.findById(item.productId);
@@ -26,53 +26,55 @@ export const placeOrder = async (req, res) => {
       0
     );
 
-    console.log("Paystack key being used:", process.env.PAYSTACK_SECRET_KEY);
+    let reference = null;
+    let authorization_url = null;
 
-    const response = await axios.post(
-      "https://api.paystack.co/transaction/initialize",
-      {
-        email,
-        amount: totalAmount * 100,
-        currency: "GHS",
-        // ✅ Redirect user to frontend after payment
-         callback_url: "http://localhost:4000/api/order/verify"
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json"
+    if (paymentMethod === "Online") {
+      const response = await axios.post(
+        "https://api.paystack.co/transaction/initialize",
+        {
+          email,
+          amount: totalAmount * 100,
+          currency: "GHS",
+          callback_url: "http://localhost:4000/api/order/verify"
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            "Content-Type": "application/json"
+          }
         }
-      }
+      );
 
-    );
+      reference = response.data.data.reference;
+      authorization_url = response.data.data.authorization_url;
+    }
 
-
-
-
-
-    // ✅ Save order with enriched items
     const newOrder = new orderModel({
-      userId: req.user.id, // decoded from token middleware
+      userId: req.user.id,
       email,
       items: enrichedItems,
       address,
-      amount: totalAmount, // ✅ use "amount" to match schema
-      reference: response.data.data.reference,
-      status: "Pending",
-      payment: false
+      amount: totalAmount,
+      reference,
+      status: paymentMethod === "CashOnDelivery" ? "Pending Delivery" : "Pending",
+      payment: false,
+      paymentMethod
     });
 
     await newOrder.save();
+    
 
     res.json({
       success: true,
-      authorization_url: response.data.data.authorization_url
+      authorization_url
     });
   } catch (error) {
-    console.error("Paystack init error:", error.response?.data || error.message);
+    console.error("Place order error:", error.response?.data || error.message);
     res.status(500).json({ success: false, message: "Payment initialization failed" });
   }
 };
+
 
 // Verify order (after Paystack callback)
 export const verifyOrder = async (req, res) => {

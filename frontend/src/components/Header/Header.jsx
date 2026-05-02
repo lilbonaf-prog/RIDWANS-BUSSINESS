@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 const Header = () => {
   return (
-    <motion.div
+    <motion.div className="hero-banner"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
@@ -48,7 +48,7 @@ const Header = () => {
             marginBottom: "30px"
           }}
         >
-          Your One-Stop Tech & Gadget Store — Phones, Laptops, Smartwatches & Repairs
+          <span style={{color:'whitesmoke'}}>Your One-Stop Tech & Gadget Store — Phones, Laptops, Smartwatches & Repairs</span> 
         </motion.p>
 
         <motion.div

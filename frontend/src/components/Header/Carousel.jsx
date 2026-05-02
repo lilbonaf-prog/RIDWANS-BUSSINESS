@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Carousel } from "react-bootstrap";
 
 // Import images and video
-import slide1 from '../../assets/slide1.jpg';
-import slide2 from '../../assets/slide2.jpg';
-import slide3 from '../../assets/slide3.jpg';
-import slideVideo from '../../assets/slide4.mp4';
+import Slide1 from '../../assets/Slideimage1.jpg';
+import Slide2 from '../../assets/Slideimage2.jpg';
+import Slide3 from '../../assets/Slideimage3.jpg';
+import SlideVideo from '../../assets/Slidevid4.mp4';
 import videoPoster from '../../assets/video-poster.jpg';
 
 const HeroCarousel = () => {
@@ -29,17 +29,17 @@ const HeroCarousel = () => {
     <Carousel interval={3000} controls={true} indicators={true} pause={false}>
       {/* Slide 1 */}
       <Carousel.Item>
-        <img className="d-block w-100" src={slide1} alt="Slide 1" style={fitStyle} />
+        <img className="d-block w-100" src={Slide1} alt="Slide 1" style={fitStyle} />
       </Carousel.Item>
 
       {/* Slide 2 */}
       <Carousel.Item>
-        <img className="d-block w-100" src={slide2} alt="Slide 2" style={fitStyle} />
+        <img className="d-block w-100" src={Slide2} alt="Slide 2" style={fitStyle} />
       </Carousel.Item>
 
       {/* Slide 3 */}
       <Carousel.Item>
-        <img className="d-block w-100" src={slide3} alt="Slide 3" style={fitStyle} />
+        <img className="d-block w-100" src={Slide3} alt="Slide 3" style={fitStyle} />
       </Carousel.Item>
 
       {/* Slide 4 (Video) */}
@@ -53,7 +53,7 @@ const HeroCarousel = () => {
           poster={videoPoster}
           style={fitStyle}
         >
-          <source src={slideVideo} type="video/mp4" />
+          <source src={SlideVideo} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       </Carousel.Item>

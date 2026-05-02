@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import './PhoneDisplay.css'
-import { StoreContext } from '../../context/storecontext'
+import { StoreContext } from '../../context/StoreContext'
 import PhoneItem from '../../PhoneItem/PhoneItem'
 
 const PhoneDisplay = ({category}) => {

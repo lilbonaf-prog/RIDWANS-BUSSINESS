@@ -13,10 +13,17 @@ const port = 4000;
 app.use(express.json());
 
 app.use(cors({
-  origin: ["http://localhost:5174", "http://localhost:5173", "https://ridwanbusiness.com",
-    "https://admin.ridwanbusiness.com"],
+  origin: [
+    "http://localhost:5174",
+    "http://localhost:5173",
+    "https://ridwanbusiness.com",
+    "https://www.ridwanbusiness.com",
+    "https://ridwans-bussiness.vercel.app",
+    "https://admin.ridwanbusiness.com"
+  ],
   credentials: true
 }));
+
 
 connectDB();
 

@@ -142,7 +142,7 @@ router.get("/verify", async (req, res) => {
       );
 
       // ✅ Redirect to payment-success page
-      return res.redirect(`http://localhost:5174/payment-success?reference=${reference}`);
+      return res.redirect(`http://ridwanbusiness.com/payment-success?reference=${reference}`);
     } else {
       // ❌ Mark order as failed
       await orderModel.findOneAndUpdate(
@@ -152,7 +152,7 @@ router.get("/verify", async (req, res) => {
       );
 
       // ✅ Redirect to payment-success page with failure flag
-      return res.redirect("http://localhost:5174/payment-success?reference=failed");
+      return res.redirect("http://ridwanbusiness.com/payment-success?reference=failed");
     }
   } catch (error) {
     console.error("Verification error:", error.response?.data || error.message);

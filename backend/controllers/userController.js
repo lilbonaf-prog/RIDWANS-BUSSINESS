@@ -31,6 +31,8 @@ const loginUser = async (req, res) => {
 
 // helper to create JWT
 const createToken = (id) => {
+  console.log("JWT_SECRET value:", process.env.JWT_SECRET);
+
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 }
 

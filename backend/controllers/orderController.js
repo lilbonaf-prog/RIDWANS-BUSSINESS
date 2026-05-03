@@ -36,7 +36,7 @@ export const placeOrder = async (req, res) => {
           email,
           amount: totalAmount * 100,
           currency: "GHS",
-          callback_url: "http://localhost:4000/api/order/verify"
+          callback_url: "http://localhost:4000/api/order/verify/webhook"
         },
         {
           headers: {

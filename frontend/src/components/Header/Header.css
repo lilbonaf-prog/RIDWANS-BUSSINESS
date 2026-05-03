@@ -1,6 +1,6 @@
 .hero-banner {
   background-image: url('/images/hero-banner.jpg') !important;
-  background-size: cover !important;
+  background-size: contain !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
   min-height: 70vh !important;

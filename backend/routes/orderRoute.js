@@ -4,6 +4,7 @@ import orderModel from "../models/orderModel.js";
 import cartModel from "../models/cartModel.js"; // ✅ import cart model
 import { verifyOrder, userOrders, listOrders, updateStatus } from "../controllers/orderController.js";
 import authMiddleware from "../middleware/auth.js";
+import crypto from "crypto";
 
 const router = express.Router();
 
@@ -14,6 +15,36 @@ router.get('/list',listOrders)
 
 // ✅ Fetch user orders (requires token)
 router.post("/userorders", authMiddleware, userOrders);
+
+
+
+// ✅ Paystack webhook
+router.post("/webhook", express.json(), async (req, res) => {
+  const hash = crypto.createHmac("sha512", process.env.PAYSTACK_SECRET_KEY)
+                     .update(JSON.stringify(req.body))
+                     .digest("hex");
+
+  if (hash === req.headers["x-paystack-signature"]) {
+    const event = req.body;
+
+    // Only handle successful transactions
+    if (event.event === "charge.success") {
+      const reference = event.data.reference;
+
+      // ✅ Update order in MongoDB
+      await orderModel.findOneAndUpdate(
+        { reference },
+        { status: "Paid", payment: true },
+        { returnDocument: "after" }
+      );
+
+      console.log("Webhook verified payment:", reference);
+    }
+  }
+
+  res.sendStatus(200); // Always respond 200 so Paystack knows you received it
+});
+
 
 // ✅ Place order (requires token)
 router.post("/place", authMiddleware, async (req, res) => {

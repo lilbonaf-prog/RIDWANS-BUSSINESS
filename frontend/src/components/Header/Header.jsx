@@ -12,7 +12,7 @@ const Header = () => {
       transition={{ duration: 1 }}
       style={{
         backgroundImage: "url('/images/hero-banner.jpg')", // updated image
-        backgroundSize: "cover",      // ensues full coverage
+        backgroundSize: "contain",      // ensues full coverage
         backgroundPosition: "center", // keeps the focus centered
         backgroundRepeat: "no-repeat",
         color: "white",

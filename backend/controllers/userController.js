@@ -32,7 +32,7 @@ const loginUser = async (req, res) => {
 // helper to create JWT
 const createToken = (id) => {
 
-  return jwt.sign({ id },"random#secret", { expiresIn: "7d" });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 }
 
 // register user

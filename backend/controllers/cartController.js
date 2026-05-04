@@ -57,7 +57,7 @@ const getCart = async (req, res) => {
     }
 
     const cartData = user.cartData || {};
-    console.log("Cart data returned:", cartData); // 🔎 Debug log
+     
 
     res.json({ success: true, cartData });
   } catch (error) {

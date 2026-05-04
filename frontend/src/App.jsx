@@ -6,7 +6,7 @@ import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home/Home';
 import Cart from './pages/Cart/Cart';
 import PlaceOrder from './pages/PlaceOrder/PlaceOrder';
-import PaymentSuccess from './pages/PaymentSuccess/PaymentSuccess';
+import PaymentSuccess from './pages/PaymentSuccess/PaymentSuccess.jsx';
 // import Contact from './pages/Contact/Contact';
 // import Wishlist from './pages/Wishlist/Wishlist';
 

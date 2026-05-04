@@ -68,7 +68,7 @@ router.post("/place", authMiddleware, async (req, res) => {
           email,
           amount: totalAmount * 100,
           currency: "GHS",
-          callback_url: "http://ridwanbusiness.com/payment-success"
+          callback_url: "https://ridwanbusiness.com/payment-success"
         },
         {
           headers: {

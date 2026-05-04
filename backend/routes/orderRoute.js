@@ -142,7 +142,7 @@ router.get("/verify", async (req, res) => {
       );
 
       // ✅ Redirect to payment-success page
-      return res.redirect(`http://ridwanbusiness.com/payment-success?reference=${reference}`);
+      return res.redirect(`https://ridwanbusiness.com/payment-success?reference=${reference}`);
     } else {
       // ❌ Mark order as failed
       await orderModel.findOneAndUpdate(

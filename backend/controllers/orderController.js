@@ -36,7 +36,7 @@ export const placeOrder = async (req, res) => {
           email,
           amount: totalAmount * 100,
           currency: "GHS",
-          callback_url: "https://api.ridwanbusiness.com/api/order/verify/webhook"
+          callback_url: "https://api.ridwanbusiness.com/api/order/verify"
         },
         {
           headers: {

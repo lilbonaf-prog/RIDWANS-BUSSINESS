@@ -152,7 +152,7 @@ router.get("/verify", async (req, res) => {
       );
 
       // ✅ Redirect to payment-success page with failure flag
-      return res.redirect("http://ridwanbusiness.com/payment-success?reference=failed");
+      return res.redirect("https://ridwanbusiness.com/payment-success?reference=failed");
     }
   } catch (error) {
     console.error("Verification error:", error.response?.data || error.message);

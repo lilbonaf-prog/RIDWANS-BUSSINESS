@@ -1,6 +1,6 @@
 .hero-banner {
   background-image: url('/images/hero-banner.jpg') !important;
-  background-size: contain !important;   /* desktop shows full image */
+  background-size: contain !important;   /* always show full image */
   background-position: center !important;
   background-repeat: no-repeat !important;
   background-color: #000 !important;     /* fills gaps with black */
@@ -15,7 +15,7 @@
 }
 
 .hero-overlay {
-  background: rgba(0,0,0,0.5); /* dark overlay */
+  background: rgba(0,0,0,0.5); /* dark overlay for text readability */
   padding: 20px;
   border-radius: 8px;
   display: inline-block;
@@ -41,12 +41,11 @@
   flex-wrap: wrap !important;
 }
 
-/* On small screens, fill space */
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .hero-banner {
-    background-size: cover !important;   /* fills mobile neatly */
-    background-position: center !important;
-    min-height: 60vh !important;
+    min-height: 60vh !important;  /* shorter so full image fits */
+    background-size: contain !important; /* keep full image */
   }
 
   .hero-title {
@@ -61,6 +60,7 @@
 @media (max-width: 480px) {
   .hero-banner {
     min-height: 50vh !important;
+    background-size: contain !important; /* still show full image */
   }
 
   .hero-title {

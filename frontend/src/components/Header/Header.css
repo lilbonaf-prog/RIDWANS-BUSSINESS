@@ -1,9 +1,8 @@
 .hero-banner {
   background-image: url('/images/hero-banner.jpg') !important;
-  background-size: contain !important;   /* always show full image */
+  background-size: cover !important;       /* fill the whole banner */
   background-position: center !important;
   background-repeat: no-repeat !important;
-  background-color: #000 !important;     /* fills gaps with black */
   min-height: 70vh !important;
   display: flex !important;
   align-items: center !important;
@@ -15,10 +14,10 @@
 }
 
 .hero-overlay {
- 
   padding: 20px;
   border-radius: 8px;
   display: inline-block;
+  background: transparent !important;      /* remove black box */
 }
 
 .hero-title {
@@ -44,8 +43,8 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .hero-banner {
-    min-height: 60vh !important;  /* shorter so full image fits */
-    background-size: contain !important; /* keep full image */
+    min-height: 60vh !important;
+    background-size: cover !important;     /* still fill area */
   }
 
   .hero-title {
@@ -60,7 +59,7 @@
 @media (max-width: 480px) {
   .hero-banner {
     min-height: 50vh !important;
-    background-size: contain !important; /* still show full image */
+    background-size: cover !important;     /* keep full coverage */
   }
 
   .hero-title {

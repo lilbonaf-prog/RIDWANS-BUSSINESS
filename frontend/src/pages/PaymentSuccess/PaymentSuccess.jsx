@@ -3,8 +3,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Payment.css";
 
-
-
 const PaymentSuccess = () => {
   const [status, setStatus] = useState("Verifying payment...");
   const [order, setOrder] = useState(null);
@@ -20,8 +18,7 @@ const PaymentSuccess = () => {
         try {
           const token = localStorage.getItem("token");
           const response = await axios.get(
-            "http://api.ridwanbusiness.com/api/order/verify",
-            { reference },
+            `https://api.ridwanbusiness.com/api/order/verify?reference=${reference}`,
             {
               headers: {
                 token,

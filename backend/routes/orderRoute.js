@@ -88,7 +88,7 @@ router.post("/place", authMiddleware, async (req, res) => {
     });
 
     await newOrder.save();
-    await cartModel.deleteMany({ userId });
+    await cartModel.updateMany({ userId }, { items: [] }); // ✅ clear cart items
 
     res.json({
       success: true,
@@ -100,7 +100,7 @@ router.post("/place", authMiddleware, async (req, res) => {
   }
 });
 
-// ✅ Single verify route (works for both Paystack redirect and frontend POST)
+// ✅ Single verify route (works for both Paystack redirect and frontend GET/POST)
 router.all("/verify", verifyOrder);
 
 // ✅ Delete order (admin only)

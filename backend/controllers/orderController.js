@@ -78,15 +78,12 @@ export const placeOrder = async (req, res) => {
 export const verifyOrder = async (req, res) => {
   const reference = req.query.reference || req.body.reference;
   console.log("🔍 Verifying reference:", reference);
-  console.log("🔑 Paystack key loaded:", !!process.env.PAYSTACK_SECRET_KEY);
 
   try {
     const response = await axios.get(
       `https://api.paystack.co/transaction/verify/${reference}`,
       { headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` } }
     );
-
-    console.log("📦 Paystack verify response:", response.data);
 
     if (response.data.data.status === "success") {
       const amountPaid = response.data.data.amount / 100;
@@ -98,17 +95,17 @@ export const verifyOrder = async (req, res) => {
       );
 
       if (!order) {
-        console.log("⚠️ Order not found for reference:", reference);
         return res.status(404).json({ success: false, message: "Order not found" });
       }
 
       await cartModel.updateMany({ userId: order.userId }, { items: [] });
-      console.log("✅ Order updated and cart cleared for user:", order.userId);
 
-      if (req.query.reference) {
+      // 🔹 Redirect only if Paystack called (no token header)
+      if (req.query.reference && !req.headers.token) {
         return res.redirect(`https://ridwanbusiness.com/payment-success?status=success&reference=${reference}`);
       }
 
+      // 🔹 Otherwise return JSON for frontend
       return res.json({ success: true, order });
     } else {
       await orderModel.findOneAndUpdate(
@@ -117,9 +114,7 @@ export const verifyOrder = async (req, res) => {
         { returnDocument: "after" }
       );
 
-      console.log("❌ Payment failed for reference:", reference);
-
-      if (req.query.reference) {
+      if (req.query.reference && !req.headers.token) {
         return res.redirect(`https://ridwanbusiness.com/payment-success?status=failed&reference=${reference}`);
       }
 
@@ -130,6 +125,8 @@ export const verifyOrder = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error during verification" });
   }
 };
+
+
 
 // ✅ User orders
 export const userOrders = async (req, res) => {

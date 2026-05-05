@@ -6,7 +6,7 @@ import "./Payment.css";
 const PaymentSuccess = () => {
   const [status, setStatus] = useState("Verifying payment...");
   const [order, setOrder] = useState(null);
-  const [countdown, setCountdown] = useState(15); // ✅ 15 seconds countdown
+  const [countdown, setCountdown] = useState(15);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,12 +31,11 @@ const PaymentSuccess = () => {
             setStatus("✅ Payment successful! Thank you for your order.");
             setOrder(response.data.order);
 
-            // ✅ Start countdown
             const interval = setInterval(() => {
               setCountdown(prev => {
                 if (prev <= 1) {
                   clearInterval(interval);
-                  navigate("/myorders"); // redirect when countdown ends
+                  navigate("/myorders");
                 }
                 return prev - 1;
               });
@@ -89,12 +88,10 @@ const PaymentSuccess = () => {
             </div>
           )}
 
-          {/* ✅ Countdown message */}
           <p className="countdown-text">
             Redirecting to My Orders in <strong>{countdown}</strong> seconds...
           </p>
 
-          {/* ✅ Navigation buttons */}
           <div className="actions">
             <button onClick={() => navigate("/myorders")} className="btn-orders">
               Go to My Orders →

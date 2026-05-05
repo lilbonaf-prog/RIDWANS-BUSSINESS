@@ -77,7 +77,10 @@ export const placeOrder = async (req, res) => {
 export const verifyOrder = async (req, res) => {
   // Accept reference from query (Paystack redirect) OR body (frontend POST)
   const reference = req.query.reference || req.body.reference;
-  console.log("Verifying reference:", reference);
+  console.log("🔍 Verifying reference:", reference);
+
+  // Check if secret key is loaded
+  console.log("🔑 Paystack key loaded:", !!process.env.PAYSTACK_SECRET_KEY);
 
   try {
     const response = await axios.get(
@@ -85,7 +88,8 @@ export const verifyOrder = async (req, res) => {
       { headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` } }
     );
 
-    console.log("Paystack verify response:", response.data);
+    // Log full Paystack response
+    console.log("📦 Paystack verify response:", response.data);
 
     if (response.data.data.status === "success") {
       const amountPaid = response.data.data.amount / 100;
@@ -97,10 +101,12 @@ export const verifyOrder = async (req, res) => {
       );
 
       if (!order) {
+        console.log("⚠️ Order not found for reference:", reference);
         return res.status(404).json({ success: false, message: "Order not found" });
       }
 
       await cartModel.updateMany({ userId: order.userId }, { items: [] });
+      console.log("✅ Order updated and cart cleared for user:", order.userId);
 
       // If Paystack redirected, send user back to frontend
       if (req.query.reference) {
@@ -116,6 +122,8 @@ export const verifyOrder = async (req, res) => {
         { returnDocument: "after" }
       );
 
+      console.log("❌ Payment failed for reference:", reference);
+
       if (req.query.reference) {
         return res.redirect(`https://ridwanbusiness.com/payment-success?status=failed&reference=${reference}`);
       }
@@ -123,10 +131,11 @@ export const verifyOrder = async (req, res) => {
       return res.json({ success: false, message: "Payment failed" });
     }
   } catch (error) {
-    console.error("Payment verification error:", error.response?.data || error.message);
+    console.error("💥 Payment verification error:", error.response?.data || error.message);
     res.status(500).json({ success: false, message: "Server error during verification" });
   }
 };
+
 
 // User orders
 export const userOrders = async (req, res) => {

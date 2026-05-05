@@ -20,7 +20,7 @@ const PaymentSuccess = () => {
         try {
           const token = localStorage.getItem("token");
           const response = await axios.post(
-            "http://admin.ridwanbusiness.com/api/order/verify",
+            "http://api.ridwanbusiness.com/api/order/verify",
             { reference },
             {
               headers: {

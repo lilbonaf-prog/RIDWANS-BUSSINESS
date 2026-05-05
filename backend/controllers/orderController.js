@@ -76,52 +76,48 @@ export const placeOrder = async (req, res) => {
 };
 
 
+
 // Verify order (after Paystack callback)
 export const verifyOrder = async (req, res) => {
-  const { reference } = req.body;
+  // ✅ Paystack sends reference in query string, not body
+  const { reference } = req.query;
 
   try {
     const response = await axios.get(
       `https://api.paystack.co/transaction/verify/${reference}`,
       { headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` } }
     );
-    
 
     if (response.data.data.status === "success") {
-      // ✅ Convert amount from pesewas/kobo to main currency unit
       const amountPaid = response.data.data.amount / 100;
 
-      // ✅ Mark order as paid and update amount
       const order = await orderModel.findOneAndUpdate(
         { reference },
         { status: "Paid", payment: true, amount: amountPaid },
-        { returnDocument: 'after' }
+        { returnDocument: "after" }
       );
 
       if (!order) {
         return res.status(404).json({ success: false, message: "Order not found" });
       }
 
-      // ✅ Clear cart after successful payment
-      await cartModel.findOneAndUpdate(
-        { userId: order.userId },
-        { items: {} }
-      );
+      // ✅ Clear cart properly (set to empty array)
+      await cartModel.updateMany({ userId: order.userId }, { items: [] });
 
-      return res.json({ success: true, order });
+      // ✅ Redirect to frontend with success flag
+      return res.redirect(`https://ridwanbusiness.com/payment-success?status=success&reference=${reference}`);
     } else {
-      // ❌ Mark order as failed
-      const order = await orderModel.findOneAndUpdate(
+      await orderModel.findOneAndUpdate(
         { reference },
         { status: "Failed", payment: false },
-         { returnDocument: 'after' }
+        { returnDocument: "after" }
       );
 
-      return res.json({ success: false, order });
+      return res.redirect(`https://ridwanbusiness.com/payment-success?status=failed&reference=${reference}`);
     }
   } catch (error) {
     console.error("Payment verification error:", error.response?.data || error.message);
-    res.status(500).json({ success: false, message: "Server error during verification" });
+    res.status(500).send("Server error during verification");
   }
 };
 

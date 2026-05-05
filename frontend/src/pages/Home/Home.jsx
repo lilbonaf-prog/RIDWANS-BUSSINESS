@@ -13,7 +13,13 @@ const Home = () => {
     <div>
       <Header />
       <br />
-      <HeroCarousel/>
+      <div className="hero-info">
+        <p>
+          Secure payments, fast delivery, and top‑quality electronics — shop with confidence.
+        </p>
+      </div>
+
+      <HeroCarousel />
       {/* Pass the correct prop name */}
       <ExploreProducts category={category} setCategory={setCategory} />
       <PhoneDisplay category={category} />

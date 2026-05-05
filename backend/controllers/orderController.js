@@ -3,11 +3,12 @@ import orderModel from "../models/orderModel.js";
 import cartModel from "../models/cartModel.js";
 import productModel from "../models/productModel.js";
 
-// Place order (initialize Paystack payment)
+// ✅ Place order (initialize Paystack payment)
 export const placeOrder = async (req, res) => {
   try {
     const { email, items, address, paymentMethod } = req.body;
 
+    // Enrich items with product details
     const enrichedItems = await Promise.all(
       items.map(async (item) => {
         const product = await productModel.findById(item.productId);
@@ -73,13 +74,10 @@ export const placeOrder = async (req, res) => {
   }
 };
 
-// Verify order (Paystack callback OR frontend manual call)
+// ✅ Verify order (Paystack callback OR frontend manual call)
 export const verifyOrder = async (req, res) => {
-  // Accept reference from query (Paystack redirect) OR body (frontend POST)
   const reference = req.query.reference || req.body.reference;
   console.log("🔍 Verifying reference:", reference);
-
-  // Check if secret key is loaded
   console.log("🔑 Paystack key loaded:", !!process.env.PAYSTACK_SECRET_KEY);
 
   try {
@@ -88,7 +86,6 @@ export const verifyOrder = async (req, res) => {
       { headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` } }
     );
 
-    // Log full Paystack response
     console.log("📦 Paystack verify response:", response.data);
 
     if (response.data.data.status === "success") {
@@ -108,12 +105,10 @@ export const verifyOrder = async (req, res) => {
       await cartModel.updateMany({ userId: order.userId }, { items: [] });
       console.log("✅ Order updated and cart cleared for user:", order.userId);
 
-      // If Paystack redirected, send user back to frontend
       if (req.query.reference) {
         return res.redirect(`https://ridwanbusiness.com/payment-success?status=success&reference=${reference}`);
       }
 
-      // If frontend called manually, return JSON
       return res.json({ success: true, order });
     } else {
       await orderModel.findOneAndUpdate(
@@ -136,12 +131,11 @@ export const verifyOrder = async (req, res) => {
   }
 };
 
-
-// User orders
+// ✅ User orders
 export const userOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({ userId: req.user.id });
-    console.log("Orders fetched for user:", orders);
+    console.log("📦 Orders fetched for user:", orders);
     res.json({ success: true, data: { orders } });
   } catch (error) {
     console.log(error);
@@ -149,7 +143,7 @@ export const userOrders = async (req, res) => {
   }
 };
 
-// Admin list orders
+// ✅ Admin list orders
 export const listOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({});
@@ -160,7 +154,7 @@ export const listOrders = async (req, res) => {
   }
 };
 
-// Update order status
+// ✅ Update order status
 export const updateStatus = async (req, res) => {
   try {
     await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status });

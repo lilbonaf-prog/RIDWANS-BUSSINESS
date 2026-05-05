@@ -1,12 +1,11 @@
 import axios from "axios";
 import orderModel from "../models/orderModel.js";
 import cartModel from "../models/cartModel.js";
-import productModel from "../models/productModel.js"; // ✅ import product model
+import productModel from "../models/productModel.js";
 
 // Place order (initialize Paystack payment)
 export const placeOrder = async (req, res) => {
   try {
-
     const { email, items, address, paymentMethod } = req.body;
 
     const enrichedItems = await Promise.all(
@@ -63,7 +62,6 @@ export const placeOrder = async (req, res) => {
     });
 
     await newOrder.save();
-    
 
     res.json({
       success: true,
@@ -75,18 +73,19 @@ export const placeOrder = async (req, res) => {
   }
 };
 
-
-
-// Verify order (after Paystack callback)
+// Verify order (Paystack callback OR frontend manual call)
 export const verifyOrder = async (req, res) => {
-  // ✅ Paystack sends reference in query string, not body
-  const { reference } = req.query;
+  // Accept reference from query (Paystack redirect) OR body (frontend POST)
+  const reference = req.query.reference || req.body.reference;
+  console.log("Verifying reference:", reference);
 
   try {
     const response = await axios.get(
       `https://api.paystack.co/transaction/verify/${reference}`,
       { headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` } }
     );
+
+    console.log("Paystack verify response:", response.data);
 
     if (response.data.data.status === "success") {
       const amountPaid = response.data.data.amount / 100;
@@ -101,11 +100,15 @@ export const verifyOrder = async (req, res) => {
         return res.status(404).json({ success: false, message: "Order not found" });
       }
 
-      // ✅ Clear cart properly (set to empty array)
       await cartModel.updateMany({ userId: order.userId }, { items: [] });
 
-      // ✅ Redirect to frontend with success flag
-      return res.redirect(`https://ridwanbusiness.com/payment-success?status=success&reference=${reference}`);
+      // If Paystack redirected, send user back to frontend
+      if (req.query.reference) {
+        return res.redirect(`https://ridwanbusiness.com/payment-success?status=success&reference=${reference}`);
+      }
+
+      // If frontend called manually, return JSON
+      return res.json({ success: true, order });
     } else {
       await orderModel.findOneAndUpdate(
         { reference },
@@ -113,22 +116,23 @@ export const verifyOrder = async (req, res) => {
         { returnDocument: "after" }
       );
 
-      return res.redirect(`https://ridwanbusiness.com/payment-success?status=failed&reference=${reference}`);
+      if (req.query.reference) {
+        return res.redirect(`https://ridwanbusiness.com/payment-success?status=failed&reference=${reference}`);
+      }
+
+      return res.json({ success: false, message: "Payment failed" });
     }
   } catch (error) {
     console.error("Payment verification error:", error.response?.data || error.message);
-    res.status(500).send("Server error during verification");
+    res.status(500).json({ success: false, message: "Server error during verification" });
   }
 };
 
-
-// User orders for frontend
+// User orders
 export const userOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({ userId: req.user.id });
-        // 🔍 Debug log
     console.log("Orders fetched for user:", orders);
-
     res.json({ success: true, data: { orders } });
   } catch (error) {
     console.log(error);
@@ -136,7 +140,7 @@ export const userOrders = async (req, res) => {
   }
 };
 
-// Listing orders for admin panel
+// Admin list orders
 export const listOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({});
@@ -147,14 +151,13 @@ export const listOrders = async (req, res) => {
   }
 };
 
-// api for updating order status
+// Update order status
 export const updateStatus = async (req, res) => {
   try {
-    await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status })
-    res.json({ success: true, message: "Status Updated" })
+    await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status });
+    res.json({ success: true, message: "Status Updated" });
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: "Errror" })
-
+    res.json({ success: false, message: "Error" });
   }
-}
+};

@@ -21,6 +21,7 @@ const Home = () => {
 
       <HeroCarousel />
       {/* Pass the correct prop name */}
+      <br />
       <ExploreProducts category={category} setCategory={setCategory} />
       <PhoneDisplay category={category} />
       <AppDownload />

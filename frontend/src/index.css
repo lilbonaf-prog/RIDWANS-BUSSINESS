@@ -14,3 +14,18 @@ a{
   color: inherit;
 }
 
+/* Prevent global sideways scroll */
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Allow product lists to scroll normally */
+.Explore-products-list {
+  overflow-x: auto;   /* restores horizontal scroll */
+  -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+}
+.Explore-products-list-items {
+  flex: 0 0 auto;   /* prevents shrinking */
+}

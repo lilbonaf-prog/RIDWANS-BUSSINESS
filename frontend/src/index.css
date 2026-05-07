@@ -14,8 +14,3 @@ a{
   color: inherit;
 }
 
-/* Prevent horizontal overflow */
-html, body {
-  width: 100%;
-  overflow-x: hidden;   /* stops sideways scrolling */
-}

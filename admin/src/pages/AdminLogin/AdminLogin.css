@@ -1,0 +1,114 @@
+/* 🔹 Admin Login Page */
+.admin-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+}
+
+.admin-login form {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  width: 100%;
+  max-width: 400px;
+}
+
+.admin-login h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  color: #2a5298;
+}
+
+.admin-login input {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.admin-login input:focus {
+  border-color: #2a5298;
+  outline: none;
+  box-shadow: 0 0 5px rgba(42,82,152,0.4);
+}
+
+.admin-login button {
+  width: 100%;
+  padding: 12px;
+  background: #2a5298;
+  color: #fff;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.admin-login button:hover {
+  background: #1e3c72;
+}
+
+/* Disabled button style */
+.admin-login button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+/* 🔹 Spinner inside button */
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #fff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 🔹 Error message */
+.error-message {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #d9534f;
+}
+
+/* 🔹 Responsive tweaks */
+@media (max-width: 480px) {
+  .admin-login form {
+    padding: 25px 20px;
+    border-radius: 10px;
+  }
+
+  .admin-login h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+
+  .admin-login input {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  .admin-login button {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+}

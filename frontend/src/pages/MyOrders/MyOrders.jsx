@@ -13,12 +13,12 @@ const fetchOrders = async () => {
     const response = await axios.post(
       url + "/api/order/userorders",
       {},
-      { headers: { token } }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
-    console.log("Orders fetched:", response.data.data.orders); // 🔎 Debug
-    setData(response.data.data.orders || []); // ✅ set array directly
+    console.log("Orders fetched:", response.data.data); 
+    setData(response.data.data || []);
   } catch (err) {
-    console.error("Fetch orders error:", err.message);
+    console.error("Fetch orders error:", err.response?.data || err.message);
   }
 };
 

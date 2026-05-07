@@ -8,9 +8,14 @@ const Orders = ({ url }) => {
   const [orders, setOrders] = useState([]);
   const [filter, setFilter] = useState("All");
 
+  // Get token from localStorage
+  const token = localStorage.getItem("adminToken");
+
   const fetchAllOrders = async () => {
     try {
-      const response = await axios.get(url + "/api/order/list");
+      const response = await axios.get(url + "/api/order/list", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       if (response.data.success) {
         setOrders(response.data.data);
       } else {
@@ -24,10 +29,11 @@ const Orders = ({ url }) => {
 
   const statusHandler = async (event, orderId) => {
     try {
-      const response = await axios.post(url + "/api/order/status", {
-        orderId,
-        status: event.target.value
-      });
+      const response = await axios.post(
+        url + "/api/order/status",
+        { orderId, status: event.target.value },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       if (response.data.success) {
         await fetchAllOrders();
       }
@@ -39,14 +45,15 @@ const Orders = ({ url }) => {
   const deleteOrder = async (orderId, recipientName) => {
     if (!window.confirm(`Delete order for ${recipientName}?`)) return;
 
-    // Mark order as deleting for animation
     setOrders(prev =>
       prev.map(o => o._id === orderId ? { ...o, deleting: true } : o)
     );
 
     setTimeout(async () => {
       try {
-        const response = await axios.delete(url + "/api/order/delete/" + orderId);
+        const response = await axios.delete(url + "/api/order/delete/" + orderId, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         if (response.data.success) {
           toast.success(`Order for ${recipientName} deleted`);
           await fetchAllOrders();
@@ -56,7 +63,7 @@ const Orders = ({ url }) => {
       } catch (err) {
         toast.error("Server error");
       }
-    }, 400); // wait for fade‑out
+    }, 400);
   };
 
   useEffect(() => {
@@ -71,7 +78,6 @@ const Orders = ({ url }) => {
     <div className="order add">
       <h3>Order Page</h3>
 
-      {/* ✅ Filter dropdown */}
       <div className="filter-bar">
         <label>Filter by Payment Method: </label>
         <select value={filter} onChange={(e) => setFilter(e.target.value)}>
@@ -109,7 +115,6 @@ const Orders = ({ url }) => {
                 Payment Method: {order.paymentMethod === "CashOnDelivery" ? "Cash on Delivery" : "Online (Paystack)"}
               </p>
 
-              {/* ✅ Status label with color highlight */}
               <p className={`order-status 
                 ${order.status === "Product Processing" ? "status-processing" : 
                  order.status === "Out for delivery" ? "status-delivery" : 
@@ -133,7 +138,6 @@ const Orders = ({ url }) => {
               <option value="Delivered">Delivered</option>
             </select>
 
-            {/* ✅ Delete button only if Delivered */}
             {order.status === "Delivered" && (
               <button
                 className="delete-btn"

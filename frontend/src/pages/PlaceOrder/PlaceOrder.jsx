@@ -54,21 +54,22 @@ const PlaceOrder = () => {
         country: formData.country
       };
 
-      const response = await axios.post(
-        url + "/api/order/place",
-        {
-          email: formData.email,
-          items,
-          address,
-          paymentMethod: formData.paymentMethod
-        },
-        {
-          headers: {
-            token,
-            "Content-Type": "application/json"
-          }
-        }
-      );
+const response = await axios.post(
+  url + "/api/order/place",
+  {
+    email: formData.email,
+    items,
+    address,
+    paymentMethod: formData.paymentMethod
+  },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,   // ✅ correct header
+      "Content-Type": "application/json"
+    }
+  }
+);
+
 
       if (response.data.success) {
         if (formData.paymentMethod === "CashOnDelivery") {

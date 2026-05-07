@@ -1,4 +1,4 @@
-// C:/Users/RICHMON/Desktop/RIDWAN'S BUSSINESS/frontend/src/pages/ProductsPage.jsx
+
 
 import React, { useState } from "react";
 import Navigationbar from "../components/navbar/Navbar";

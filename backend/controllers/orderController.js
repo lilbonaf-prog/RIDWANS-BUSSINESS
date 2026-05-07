@@ -3,40 +3,44 @@ import orderModel from "../models/orderModel.js";
 import cartModel from "../models/cartModel.js";
 import productModel from "../models/productModel.js";
 
-// ✅ Place order (initialize Paystack payment)
+// Place order
 export const placeOrder = async (req, res) => {
   try {
     const { email, items, address, paymentMethod } = req.body;
 
-    // Enrich items with product details
+    // Get product details from database
     const enrichedItems = await Promise.all(
       items.map(async (item) => {
         const product = await productModel.findById(item.productId);
+
         return {
           productId: item.productId,
-          name: product ? product.name : "Unknown",
+          name: product?.name || "Unknown",
           quantity: item.quantity,
-          price: product ? product.price : item.price
+          price: product?.price || item.price
         };
       })
     );
 
+    // Calculate total
     const totalAmount = enrichedItems.reduce(
-      (sum, item) => sum + Number(item.price) * Number(item.quantity),
+      (sum, item) =>
+        sum + Number(item.price) * Number(item.quantity),
       0
     );
 
     let reference = null;
     let authorization_url = null;
 
+    // Online payment with Paystack
     if (paymentMethod === "Online") {
       const response = await axios.post(
         "https://api.paystack.co/transaction/initialize",
         {
           email,
-          amount: totalAmount * 100,
+          amount: totalAmount * 100, // Paystack uses pesewas
           currency: "GHS",
-          callback_url: "https://api.ridwanbusiness.com/api/order/verify"
+          callback_url: process.env.PAYSTACK_CALLBACK_URL
         },
         {
           headers: {
@@ -50,6 +54,7 @@ export const placeOrder = async (req, res) => {
       authorization_url = response.data.data.authorization_url;
     }
 
+    // Save order
     const newOrder = new orderModel({
       userId: req.user.id,
       email,
@@ -57,7 +62,10 @@ export const placeOrder = async (req, res) => {
       address,
       amount: totalAmount,
       reference,
-      status: paymentMethod === "CashOnDelivery" ? "Pending Delivery" : "Pending",
+      status:
+        paymentMethod === "CashOnDelivery"
+          ? "Pending Delivery"
+          : "Pending",
       payment: false,
       paymentMethod
     });
@@ -68,96 +76,172 @@ export const placeOrder = async (req, res) => {
       success: true,
       authorization_url
     });
+
   } catch (error) {
-    console.error("Place order error:", error.response?.data || error.message);
-    res.status(500).json({ success: false, message: "Payment initialization failed" });
+    console.log("Place order error:", error.response?.data || error.message);
+
+    res.status(500).json({
+      success: false,
+      message: "Payment initialization failed"
+    });
   }
 };
 
-// ✅ Verify order (Paystack callback OR frontend manual call)
-export const verifyOrder = async (req, res) => {
-  const reference = req.query.reference || req.body.reference;
-  console.log("🔍 Verifying reference:", reference);
 
+// Verify payment
+export const verifyOrder = async (req, res) => {
   try {
+    const reference =
+      req.query.reference || req.body.reference;
+
     const response = await axios.get(
       `https://api.paystack.co/transaction/verify/${reference}`,
-      { headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` } }
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+        }
+      }
     );
 
     if (response.data.data.status === "success") {
-      const amountPaid = response.data.data.amount / 100;
 
-      const order = await orderModel.findOneAndUpdate(
-        { reference },
-        { status: "Paid", payment: true, amount: amountPaid },
-        { returnDocument: "after" }
-      );
+      const amountPaid =
+        response.data.data.amount / 100;
+
+      const order =
+        await orderModel.findOneAndUpdate(
+          { reference },
+          {
+            status: "Paid",
+            payment: true,
+            amount: amountPaid
+          },
+          { new: true }
+        );
 
       if (!order) {
-        return res.status(404).json({ success: false, message: "Order not found" });
+        return res.status(404).json({
+          success: false,
+          message: "Order not found"
+        });
       }
 
-      await cartModel.updateMany({ userId: order.userId }, { items: [] });
+      // Clear cart after payment
+      await cartModel.updateMany(
+        { userId: order.userId },
+        { items: [] }
+      );
 
-      // 🔹 Redirect only if Paystack called (no token header)
+      // If Paystack redirected directly
       if (req.query.reference && !req.headers.token) {
-        return res.redirect(`https://ridwanbusiness.com/payment-success?status=success&reference=${reference}`);
+        return res.redirect(
+          `${process.env.FRONTEND_URL}/payment-success?status=success&reference=${reference}`
+        );
       }
 
-      // 🔹 Otherwise return JSON for frontend
-      return res.json({ success: true, order });
+      return res.json({
+        success: true,
+        order
+      });
+
     } else {
+
       await orderModel.findOneAndUpdate(
         { reference },
-        { status: "Failed", payment: false },
-        { returnDocument: "after" }
+        {
+          status: "Failed",
+          payment: false
+        }
       );
 
       if (req.query.reference && !req.headers.token) {
-        return res.redirect(`https://ridwanbusiness.com/payment-success?status=failed&reference=${reference}`);
+        return res.redirect(
+          `${process.env.FRONTEND_URL}/payment-success?status=failed&reference=${reference}`
+        );
       }
 
-      return res.json({ success: false, message: "Payment failed" });
+      return res.json({
+        success: false,
+        message: "Payment failed"
+      });
     }
+
   } catch (error) {
-    console.error("💥 Payment verification error:", error.response?.data || error.message);
-    res.status(500).json({ success: false, message: "Server error during verification" });
+    console.log("Verify payment error:", error.response?.data || error.message);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error during verification"
+    });
   }
 };
 
 
-
-// ✅ User orders
+// User orders
 export const userOrders = async (req, res) => {
   try {
-    const orders = await orderModel.find({ userId: req.user.id });
-    console.log("📦 Orders fetched for user:", orders);
-    res.json({ success: true, data: { orders } });
+    const orders = await orderModel.find({
+      userId: req.user.id
+    });
+
+    res.json({
+      success: true,
+      data: orders
+    });
+
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: "Error" });
+
+    res.json({
+      success: false,
+      message: "Error"
+    });
   }
 };
 
-// ✅ Admin list orders
+
+// Admin orders
 export const listOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({});
-    res.json({ success: true, data: orders });
+
+    res.json({
+      success: true,
+      data: orders
+    });
+
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: "Error" });
+
+    res.json({
+      success: false,
+      message: "Error"
+    });
   }
 };
 
-// ✅ Update order status
+
+// Update status
 export const updateStatus = async (req, res) => {
   try {
-    await orderModel.findByIdAndUpdate(req.body.orderId, { status: req.body.status });
-    res.json({ success: true, message: "Status Updated" });
+    await orderModel.findByIdAndUpdate(
+      req.body.orderId,
+      {
+        status: req.body.status
+      }
+    );
+
+    res.json({
+      success: true,
+      message: "Status Updated"
+    });
+
   } catch (error) {
     console.log(error);
-    res.json({ success: false, message: "Error" });
+
+    res.json({
+      success: false,
+      message: "Error"
+    });
   }
 };

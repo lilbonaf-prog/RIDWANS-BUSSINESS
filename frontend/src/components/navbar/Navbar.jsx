@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import './Navbar.css'
 import { Button, Container, Form, Nav, Navbar, NavDropdown } from 'react-bootstrap'
-import { House, Person, Envelope, Heart, Cart, BagCheck, Briefcase } from 'react-bootstrap-icons'
+import { House, Person, Envelope, Heart, Cart, BagCheck} from 'react-bootstrap-icons'
 import { Link, useNavigate } from 'react-router-dom'
 import { StoreContext } from '../../context/StoreContext';
 import { assets } from '../../assets/assets'
@@ -32,7 +32,7 @@ const Navigationbar = ({ setShowLogin, onSearch }) => {
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container fluid>
         <Navbar.Brand as={Link} to="/">
-          <Briefcase size={22} className="text-primary" /> RIDWAN'S <span style={{color: "red"}}>BUSINESS</span>
+           RIDWAN'S <span style={{color: "red"}}>BUSINESS</span>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">

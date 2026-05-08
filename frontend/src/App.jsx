@@ -18,6 +18,7 @@ import PhoneDisplay from './components/PhoneDisplay/PhoneDisplay';
 import AboutUs from './components/AboutUs/AboutUs';
 import PrivacyPolicy from './components/PrivacyPolicy/PrivacyPolicy';
 import ProductsPage from './pages/ProductsPage';
+import ProductDetail from "./pages/ProductDetail/ProductDetail.jsx";
 // import Verify from './pages/Verify/Verify';
 
 const App = () => {
@@ -42,6 +43,7 @@ const App = () => {
           <Route path="/about" element={<AboutUs />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/" element={<ProductsPage />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
 
 
 

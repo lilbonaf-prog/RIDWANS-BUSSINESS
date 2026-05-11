@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 
 // Define item schema
 const itemSchema = new mongoose.Schema({
-  name: { type: String, required: true },      // product name
-  quantity: { type: Number, required: true },  // how many
-  price: { type: Number, required: true }      // optional: unit price
+  name: { type: String, required: true },       // product name
+  description: { type: String },                // ✅ product description
+  quantity: { type: Number, required: true },   // how many
+  price: { type: Number, required: true }       // unit price
 });
 
 // Define address schema
@@ -28,8 +29,8 @@ const orderSchema = new mongoose.Schema({
   status: { type: String, default: "Product Processing" },
   date: { type: Date, default: Date.now },
   payment: { type: Boolean, default: false },
-  reference: { type: String },  // ✅ make optional
-  paymentMethod: {              // ✅ new field
+  reference: { type: String },  // optional
+  paymentMethod: {              // payment type
     type: String,
     enum: ["Online", "CashOnDelivery"],
     default: "Online"

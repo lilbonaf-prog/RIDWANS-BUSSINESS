@@ -14,223 +14,152 @@ import {
   updateStatus
 } from "../controllers/orderController.js";
 
-
-
 const router = express.Router();
 
-
 // Update order status (Admin)
-router.post("/status", authMiddleware, adminAuth, updateStatus);
-
+router.post("/status", adminAuth, updateStatus);
 
 // List all orders (Admin)
-router.get("/list", authMiddleware, adminAuth, listOrders);
-
+router.get("/list", adminAuth, listOrders);
 
 // Get logged in user orders
 router.post("/userorders", authMiddleware, userOrders);
 
-
-// Paystack webhook
+// ✅ Paystack webhook
 router.post("/webhook", express.json(), async (req, res) => {
   try {
-
     const hash = crypto
-      .createHmac(
-        "sha512",
-        process.env.PAYSTACK_SECRET_KEY
-      )
+      .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY)
       .update(JSON.stringify(req.body))
       .digest("hex");
 
     if (hash === req.headers["x-paystack-signature"]) {
-
       const event = req.body;
 
       if (event.event === "charge.success") {
-
-        const reference =
-          event.data.reference;
+        const reference = event.data.reference;
 
         await orderModel.findOneAndUpdate(
           { reference },
-          {
-            status: "Paid",
-            payment: true
-          },
+          { status: "Paid", payment: true },
           { new: true }
         );
 
-        console.log(
-          "Webhook payment verified:",
-          reference
-        );
+        console.log("Webhook payment verified:", reference);
       }
     }
 
     res.sendStatus(200);
-
   } catch (error) {
-
-    console.log(
-      "Webhook error:",
-      error.message
-    );
-
+    console.error("Webhook error:", error.message);
     res.sendStatus(500);
   }
 });
 
+// ✅ Place order
+router.post("/place", authMiddleware, async (req, res) => {
+  const { email, items, address, paymentMethod } = req.body;
+  const userId = req.user.id;
 
-// Place order
-router.post(
-  "/place",
-  authMiddleware,
-  async (req, res) => {
+  try {
+    // Calculate total
+    const totalAmount = items.reduce(
+      (sum, item) => sum + Number(item.price) * Number(item.quantity),
+      0
+    );
 
-    try {
+    let reference = null;
+    let authorization_url = null;
 
-      const {
-        email,
-        items,
-        address,
-        paymentMethod
-      } = req.body;
+    if (paymentMethod === "Online") {
+      try {
+        const payload = {
+          email,
+          amount: totalAmount * 100, // Paystack expects amount in kobo/pesewas
+          currency: "GHS",
+          callback_url: process.env.PAYSTACK_CALLBACK_URL,
+        };
 
-      const userId =
-        req.user.id;
-
-      // Calculate total
-      const totalAmount =
-        items.reduce(
-          (sum, item) =>
-            sum +
-            Number(item.price) *
-            Number(item.quantity),
-          0
+        const response = await axios.post(
+          "https://api.paystack.co/transaction/initialize",
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
 
-      let reference = null;
-      let authorization_url = null;
-
-      // Online payment
-      if (paymentMethod === "Online") {
-
-        const response =
-          await axios.post(
-            "https://api.paystack.co/transaction/initialize",
-            {
-              email,
-              amount: totalAmount * 100,
-              currency: "GHS",
-              callback_url:
-                process.env.PAYSTACK_CALLBACK_URL
-            },
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-                "Content-Type":
-                  "application/json"
-              }
-            }
-          );
-
-        reference =
-          response.data.data.reference;
-
-        authorization_url =
-          response.data.data.authorization_url;
-      }
-
-      // Save order
-      const newOrder =
-        new orderModel({
-          userId,
-          items,
-          amount: totalAmount,
-          address,
-          status:
-            paymentMethod === "CashOnDelivery"
-              ? "Pending Delivery"
-              : "Pending",
-          payment: false,
-          reference,
-          paymentMethod
+        reference = response.data.data.reference;
+        authorization_url = response.data.data.authorization_url;
+      } catch (paystackError) {
+        console.error("Paystack init error:", paystackError.response?.data || paystackError.message);
+        return res.status(500).json({
+          success: false,
+          message: "Payment initialization failed",
         });
+      }
+    }
 
-      await newOrder.save();
+    // Save order
+    const newOrder = new orderModel({
+      userId,
+      items,
+      amount: totalAmount,
+      address,
+      status: paymentMethod === "CashOnDelivery" ? "Pending Delivery" : "Pending",
+      payment: false,
+      reference,
+      paymentMethod,
+    });
 
-      // Clear cart
-      await cartModel.updateMany(
-        { userId },
-        { items: [] }
-      );
+    await newOrder.save();
 
-      res.json({
+    // Clear cart
+    await cartModel.updateMany({ userId }, { items: [] });
+
+    // ✅ Separate responses
+    if (paymentMethod === "CashOnDelivery") {
+      return res.json({
         success: true,
-        authorization_url
+        message: "Order placed successfully with Cash on Delivery",
       });
-
-    } catch (error) {
-
-      console.log(
-        "Place order error:",
-        error.response?.data ||
-        error.message
-      );
-
-      res.status(500).json({
-        success: false,
-        message:
-          "Payment initialization failed"
+    } else {
+      return res.json({
+        success: true,
+        authorization_url,
       });
     }
+  } catch (error) {
+    console.error("Place order error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to place order",
+    });
   }
-);
-
+});
 
 // Verify payment
-router.all(
-  "/verify",
-  verifyOrder
-);
-
+router.all("/verify", verifyOrder);
 
 // Delete order
-router.delete(
-  "/delete/:id",
-  async (req, res) => {
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    await orderModel.findByIdAndDelete(orderId);
 
-    try {
-
-      const orderId =
-        req.params.id;
-
-      await orderModel.findByIdAndDelete(
-        orderId
-      );
-
-      res.json({
-        success: true,
-        message:
-          "Order deleted successfully"
-      });
-
-    } catch (error) {
-
-      console.log(
-        "Delete order error:",
-        error.message
-      );
-
-      res.status(500).json({
-        success: false,
-        message:
-          "Failed to delete order"
-      });
-    }
+    res.json({
+      success: true,
+      message: "Order deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete order error:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete order",
+    });
   }
-);
+});
 
 export default router;

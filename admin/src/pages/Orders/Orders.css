@@ -153,6 +153,13 @@
 .delete-btn:hover {
   background-color: #e60000;
 }
+.order-item-description {
+  font-size: 13px;
+  color: #555;
+  margin-left: 10px;
+}
+
+
 
 /* ✅ Fade-out animation */
 .fade-out {

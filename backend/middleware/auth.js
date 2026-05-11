@@ -10,20 +10,20 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded token:", decoded);
+    console.log("Decoded user token:", decoded);
 
-    req.user = { id: decoded.id, role: decoded.role };
+    // ✅ Only id is guaranteed in user tokens
+    req.user = { id: decoded.id };
+
+    if (!req.user.id) {
+      return res.status(401).json({ message: "Invalid token payload" });
+    }
+
     next();
   } catch (err) {
+    console.error("JWT verification error:", err.message);
     return res.status(401).json({ message: "Invalid token" });
   }
-};
-
-export const adminMiddleware = (req, res, next) => {
-  if (req.user?.role !== "admin") {
-    return res.status(403).json({ message: "Access denied. Admins only." });
-  }
-  next();
 };
 
 export default authMiddleware;

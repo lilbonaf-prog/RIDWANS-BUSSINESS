@@ -3,23 +3,34 @@ import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
+// Admin login route
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
-    console.log("Received:", email, password);
-  console.log("Expected:", process.env.ADMIN_EMAIL, process.env.ADMIN_PASSWORD);
+
+  console.log("Received credentials:", email, password);
+  console.log("Expected credentials:", process.env.ADMIN_EMAIL, process.env.ADMIN_PASSWORD);
 
   // Compare against .env values
-  if (
-    email === process.env.ADMIN_EMAIL &&
-    password === process.env.ADMIN_PASSWORD
-  ) {
-    const token = jwt.sign({ role: "admin" }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
+  if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+    // Issue JWT with role: admin
+    const token = jwt.sign(
+      { role: "admin" },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" } // token valid for 7 days
+    );
+
+    return res.json({
+      success: true,
+      message: "Admin login successful",
+      token,
     });
-    return res.json({ success: true, token });
   }
 
-  res.status(401).json({ success: false, message: "Invalid credentials" });
+  // Invalid credentials
+  return res.status(401).json({
+    success: false,
+    message: "Invalid credentials",
+  });
 });
 
 export default router;

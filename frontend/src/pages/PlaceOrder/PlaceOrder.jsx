@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
 const PlaceOrder = () => {
-  const { getTotalCartAmount, discount, cartItems, phone_list, url, token } = useContext(StoreContext);
+  const { getTotalCartAmount, discount, cartItems, phone_list, url, token, clearCart } = useContext(StoreContext);
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -23,6 +23,8 @@ const PlaceOrder = () => {
   const subtotal = Number(getTotalCartAmount());
   const total = subtotal - Number(discount || 0);
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -38,6 +40,7 @@ const PlaceOrder = () => {
           return {
             productId: id,
             name: product?.name || "Unknown",
+            description: product?.description || "",
             quantity: qty,
             price: product?.price || 0
           };
@@ -54,45 +57,52 @@ const PlaceOrder = () => {
         country: formData.country
       };
 
-const response = await axios.post(
-  url + "/api/order/place",
-  {
-    email: formData.email,
-    items,
-    address,
-    paymentMethod: formData.paymentMethod
-  },
-  {
-    headers: {
-      Authorization: `Bearer ${token}`,   // ✅ correct header
-      "Content-Type": "application/json"
-    }
-  }
-);
-
+      const response = await axios.post(
+        url + "/api/order/place",
+        {
+          email: formData.email,
+          items,
+          address,
+          paymentMethod: formData.paymentMethod
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
 
       if (response.data.success) {
+        clearCart();
+
         if (formData.paymentMethod === "CashOnDelivery") {
+          // ✅ COD flow
           alert("Order placed successfully. Pay on delivery.");
           navigate("/myorders");
-        } else {
+        } else if (response.data.authorization_url) {
+          // ✅ Online flow
           window.location.href = response.data.authorization_url;
+        } else {
+          alert("Payment initialization failed");
         }
       } else {
-        alert("Payment initialization failed");
+        alert("Order placement failed");
       }
     } catch (error) {
       console.error("Place order error:", error.response?.data || error.message);
-      alert("Error connecting to payment");
+
+      // ✅ Different error messages for COD vs Online
+      if (formData.paymentMethod === "CashOnDelivery") {
+        alert("Failed to place Cash on Delivery order");
+      } else {
+        alert("Error connecting to Paystack");
+      }
     }
   };
 
-  const navigate = useNavigate();
-
   useEffect(() => {
-    if (!token) {
-      navigate('/cart');
-    } else if (getTotalCartAmount() === 0) {
+    if (!token || getTotalCartAmount() === 0) {
       navigate('/cart');
     }
   }, [token]);
@@ -140,7 +150,7 @@ const response = await axios.post(
             <b>GH₵{total}</b>
           </div>
 
-          {/* ✅ Payment Method Selection moved here */}
+          {/* ✅ Payment Method Selection */}
           <hr />
           <div className="cart-total-details">
             <p>Payment Method</p>

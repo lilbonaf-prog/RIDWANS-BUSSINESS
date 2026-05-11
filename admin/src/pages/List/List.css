@@ -1,31 +1,87 @@
-.list-table-format {
-  display: grid;
-  grid-template-columns: 0.5fr 2fr 1fr 1fr 0.5fr;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 15px;
-  border: 1px solid #cacaca;
-  font-size: 13px;
+.list-table {
+  width: 100%;
+  overflow-x: auto; /* allows horizontal scroll on small screens */
 }
 
-.list-table-format.title {
-  background-color: #f9f9f9;
+.list-table-format {
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr 1fr 150px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
 }
 
 .list-table-format img {
-  width: 50px;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 6px;
 }
 
-@media (max-width: 600px) {
+.list-table-format input {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap; /* ensures buttons wrap on small screens */
+}
+
+.actions button {
+  background: #2a9d8f;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.actions button:hover {
+  background: #21867a;
+}
+
+/* 🔹 Responsive adjustments */
+@media (max-width: 768px) {
   .list-table-format {
-    grid-template-columns: 1fr 3fr 1fr;
-    gap: 15px;
+    grid-template-columns: 80px 1fr 1fr;
+    grid-template-rows: auto auto;
+    grid-row-gap: 8px;
   }
 
-  .list-table-format.title {
-    display: none;
+  .list-table-format img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .actions {
+    justify-content: flex-start;
   }
 }
-.cursor{
-    cursor: pointer;
+
+@media (max-width: 480px) {
+  .list-table-format {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .list-table-format img {
+    width: 100%;
+    height: auto;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .actions button {
+    width: 100%;
+  }
 }

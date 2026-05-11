@@ -67,7 +67,12 @@ const Orders = ({ url }) => {
   };
 
   useEffect(() => {
+    // Initial fetch
     fetchAllOrders();
+
+    // Polling every 5 seconds
+    const interval = setInterval(fetchAllOrders, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const filteredOrders = orders.filter(order =>
@@ -95,13 +100,22 @@ const Orders = ({ url }) => {
           >
             <img src={assets.parcel_icon} alt="" />
             <div>
-              <p className="order-item-product">
-                {order.items.map((item, i) =>
-                  i === order.items.length - 1
-                    ? `${item.name} x ${item.quantity}`
-                    : `${item.name} x ${item.quantity}, `
-                )}
-              </p>
+              {/* ✅ Show product name + description */}
+              <div className="order-item-products">
+                {order.items.map((item, i) => (
+                  <div key={i} className="order-product-detail">
+                    <p className="order-item-product">
+                      {item.name} x {item.quantity}
+                    </p>
+                    {item.description && (
+                      <p className="order-item-description">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+
               <p className="order-item-name">{order.address.recipientName}</p>
               <div className="order-item-address">
                 <p>{order.address.street},</p>

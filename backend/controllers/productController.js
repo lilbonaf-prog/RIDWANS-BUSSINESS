@@ -1,5 +1,33 @@
 import productModel from "../models/productModel.js";
 import fs from "fs";
+import Product from "../models/productModel.js";
+
+export const updateProduct = async (req, res) => {
+  try {
+    const { name, description, price, category } = req.body;
+    const updateFields = { name, description, price, category };
+
+    if (req.file) {
+      updateFields.image = req.file.filename;
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      updateFields,
+      { returnDocument: 'after' }   // ✅ modern option
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    res.json({ success: true, data: updatedProduct });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error while updating product" });
+  }
+};
+
 
 // add product item
 const addProduct = async (req, res) => {

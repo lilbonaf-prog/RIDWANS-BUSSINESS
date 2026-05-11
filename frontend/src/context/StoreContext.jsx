@@ -5,7 +5,7 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
- const url = "https://api.ridwanbusiness.com";
+  const url = "https://api.ridwanbusiness.com";
   const [token, setToken] = useState("");
   const [phone_list, setPhoneList] = useState([]);
 
@@ -17,11 +17,7 @@ const StoreContextProvider = (props) => {
     }));
     if (token) {
       try {
-        await axios.post(
-          url + "/api/cart/add",
-          { itemId },
-          { headers: { token } }
-        );
+        await axios.post(url + "/api/cart/add", { itemId }, { headers: { token } });
       } catch (err) {
         console.error("Add to cart error:", err.message);
       }
@@ -41,13 +37,22 @@ const StoreContextProvider = (props) => {
     });
     if (token) {
       try {
-        await axios.post(
-          url + "/api/cart/remove",
-          { itemId },
-          { headers: { token } }
-        );
+        await axios.post(url + "/api/cart/remove", { itemId }, { headers: { token } });
       } catch (err) {
         console.error("Remove from cart error:", err.message);
+      }
+    }
+  };
+
+  // ✅ Clear cart (new)
+  const clearCart = async () => {
+    setCartItems({});
+    localStorage.removeItem("cart"); // if you persist cart locally
+    if (token) {
+      try {
+        await axios.post(url + "/api/cart/clear", {}, { headers: { token } });
+      } catch (err) {
+        console.error("Clear cart error:", err.message);
       }
     }
   };
@@ -83,12 +88,7 @@ const StoreContextProvider = (props) => {
   // ✅ Load cart
   const loadCartData = async (token) => {
     try {
-      const response = await axios.post(
-        url + "/api/cart/get",
-        {},
-        { headers: { token } }
-      );
-      console.log("Cart response from backend:", response.data); // 🔎 Debug log
+      const response = await axios.post(url + "/api/cart/get", {}, { headers: { token } });
       if (response.data?.success && response.data.cartData) {
         setCartItems(response.data.cartData);
       } else {
@@ -109,6 +109,10 @@ const StoreContextProvider = (props) => {
       }
     }
     loadData();
+
+    // 🔄 Poll for updates every 15s
+    const interval = setInterval(fetchPhoneList, 15000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -124,6 +128,7 @@ const StoreContextProvider = (props) => {
     setCartItems,
     addToCart,
     removeFromCart,
+    clearCart,            // ✅ expose clearCart
     getTotalCartAmount,
     url,
     token,

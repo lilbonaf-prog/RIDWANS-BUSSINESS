@@ -5,7 +5,7 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
-  const url = "https://api.ridwanbusiness.com";
+  const url = "http://localhost:4000";
   const [token, setToken] = useState("");
   const [phone_list, setPhoneList] = useState([]);
 

@@ -16,11 +16,11 @@ a{
 
 
 .Explore-products-list {
-  display: flex;
-  flex-wrap: wrap;   /* ✅ allows wrapping */
-  gap: 1rem;         /* spacing between items */
-  overflow-x: hidden; /* no sideways scroll */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
 }
+
 
 .Explore-products-list-items {
   flex: 1 1 250px;   /* ✅ items shrink/grow, min width 250px */

@@ -13,7 +13,7 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("https://api.ridwanbusiness.com/api/admin/login", { email, password });
+      const res = await axios.post("https://api.ridwanbusiness/api/admin/login", { email, password });
       if (res.data.success) {
         localStorage.setItem("adminToken", res.data.token);
         toast.success("Login successful! Redirecting...", { position: "top-center" });

@@ -37,35 +37,55 @@ const List = ({ url }) => {
     }
   };
 
-  const startEdit = (item) => {
-    setEditingId(item._id);
-    setFormData(item);
-  };
+const startEdit = (item) => {
+  setEditingId(item._id);
+  setFormData({
+    name: item.name,
+    category: item.category,
+    price: item.price
+  });
+};
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     setFormData({ ...formData, [name]: files ? files[0] : value });
   };
 
-  const saveUpdate = async () => {
-    try {
-      const form = new FormData();
-      Object.keys(formData).forEach((key) => form.append(key, formData[key]));
-      const response = await axios.put(`${url}/api/product/update/${editingId}`, form);
+const saveUpdate = async () => {
+  try {
+    const form = new FormData();
 
-      if (response.data.success) {
-        toast.success("✅ Product updated successfully!");
-        // update local state instantly
-        setList(list.map((p) => p._id === editingId ? response.data.data : p));
-        setEditingId(null);
-      } else {
-        toast.error("❌ Failed to update product.");
-      }
-    } catch (error) {
-      console.error("Error updating product:", error);
-      toast.error("⚠️ Server error while updating product.");
+    form.append("name", formData.name);
+    form.append("category", formData.category);
+    form.append("price", formData.price);
+
+    // only send image if user selected new one
+    if (formData.image instanceof File) {
+      form.append("image", formData.image);
     }
-  };
+
+    const response = await axios.put(
+      `${url}/api/product/update/${editingId}`,
+      form
+    );
+
+    if (response.data.success) {
+      toast.success("✅ Product updated successfully!");
+
+      setList(list.map((p) =>
+        p._id === editingId ? response.data.data : p
+      ));
+
+      setEditingId(null);
+    } else {
+      toast.error("❌ Failed to update product.");
+    }
+
+  } catch (error) {
+    console.error(error);
+    toast.error("⚠️ Server error while updating product.");
+  }
+};
 
   useEffect(() => {
     fetchList();
@@ -97,7 +117,7 @@ const List = ({ url }) => {
               </>
             ) : (
               <>
-                <img src={`${url}/images/${item.image}`} alt={item.name} />
+                <img src={item.image} alt={item.name} />
                 <p>{item.name}</p>
                 <p>{item.category}</p>
                 <p>GH₵{item.price}</p>

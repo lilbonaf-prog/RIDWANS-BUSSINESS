@@ -22,7 +22,7 @@ const PhoneItem = ({ id, name, price, description, image }) => {
       <div className="phone-item-image-container">
         <img
           className="phone-item-image"
-          src={url ? url + "/images/" + image : ""}
+          src={image}
           alt={name || "phone"}
         />
         {!cartItems?.[id] ? (

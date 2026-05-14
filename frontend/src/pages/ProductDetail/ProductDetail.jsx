@@ -22,7 +22,7 @@ const ProductDetail = () => {
     <div className="product-detail">
       <h2>{product.name}</h2>
       <img
-        src={url ? url + "/images/" + product.image : ""}
+        src={product.image}
         alt={product.name}
       />
       <p>{product.description}</p>

@@ -36,6 +36,9 @@ const LoginPopup = ({ setShowLogin }) => {
         setToken(response.data.token);
         localStorage.setItem("token", response.data.token);
         setShowLogin(false);
+
+        // 🔥 Show alert about payment
+        alert("⚠️ Online payment is currently unavailable. Please use Payment on Delivery for now.");
       } else {
         alert(response.data.message || "Login failed");
       }

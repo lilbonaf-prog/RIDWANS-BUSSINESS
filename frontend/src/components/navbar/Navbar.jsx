@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import './Navbar.css'
 import { Button, Container, Form, Nav, Navbar, NavDropdown } from 'react-bootstrap'
-import { House, Person, Envelope, Heart, Cart, BagCheck} from 'react-bootstrap-icons'
+import { House, Person, Heart, Cart, BagCheck, InfoCircle, Envelope } from 'react-bootstrap-icons'
 import { Link, useNavigate } from 'react-router-dom'
 import { StoreContext } from '../../context/StoreContext';
 import { assets } from '../../assets/assets'
@@ -20,11 +20,8 @@ const Navigationbar = ({ setShowLogin, onSearch }) => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim() !== "") {
-      // ✅ Instead of navigating, call parent filter function
-      if (typeof onSearch === 'function') {
-        onSearch(searchQuery);
-      }
+    if (searchQuery.trim() !== "" && typeof onSearch === 'function') {
+      onSearch(searchQuery);
     }
   };
 
@@ -43,26 +40,31 @@ const Navigationbar = ({ setShowLogin, onSearch }) => {
               <House className="me-1" /> Home
             </Nav.Link>
 
-            {/* Contact */}
-            <Nav.Link as={Link} to="/contact">
-              <Envelope className="me-1" /> Contact Us
+            {/* Cart - always visible */}
+            <Nav.Link as={Link} to="/cart">
+              <Cart className="me-1" /> Cart
             </Nav.Link>
 
-            {/* Dropdown */}
-            <NavDropdown title="Links" id="navbarScrollingDropdown">
-              <NavDropdown.Item as={Link} to="/cart">
-                <Cart className="me-1" /> Cart
-              </NavDropdown.Item>
+            {/* My Orders - always visible */}
+            <Nav.Link as={Link} to="/myorders">
+              <BagCheck className="me-1" /> My Orders
+            </Nav.Link>
+
+            {/* Dropdown for less urgent links */}
+            <NavDropdown title="More" id="navbarScrollingDropdown">
               <NavDropdown.Item as={Link} to="/wishlist">
                 <Heart className="me-1" /> Wishlist
               </NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item as={Link} to="/myorders" >
-                <BagCheck className="me-1" /> My Orders
+              <NavDropdown.Item as={Link} to="/about">
+                <InfoCircle className="me-1" /> About Us
+              </NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/contact">
+                <Envelope className="me-1" /> Contact Us
               </NavDropdown.Item>
             </NavDropdown>
 
-            {/* Sign In */}
+            {/* Sign In / Profile */}
             {!token ? (
               <Nav.Link onClick={() => setShowLogin(true)}>
                 <Person className="me-1" /> Sign In
@@ -83,7 +85,7 @@ const Navigationbar = ({ setShowLogin, onSearch }) => {
             )}
           </Nav>
 
-          {/* ✅ Search Form */}
+          {/* Search Form */}
           <Form className="d-flex" onSubmit={handleSearch}>
             <Form.Control
               type="search"
@@ -94,7 +96,7 @@ const Navigationbar = ({ setShowLogin, onSearch }) => {
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 if (typeof onSearch === 'function') {
-                  onSearch(e.target.value); // ✅ live filtering
+                  onSearch(e.target.value); // live filtering
                 }
               }}
             />

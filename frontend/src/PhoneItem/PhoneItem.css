@@ -4,13 +4,16 @@
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 16px;
   padding: 8px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* ✅ Product card */
 .phone-item {
   width: 100%;
-  max-width: 280px;
-  margin: auto;
+  max-width: 100%;   /* ✅ allow grid to control width */
+  margin: 0 auto;
   border-radius: 15px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease;
@@ -119,9 +122,7 @@
 @media (max-width: 768px) {
   .phone-list {
     grid-template-columns: repeat(2, 1fr); /* ✅ two per row on tablets/phones */
-  }
-  .phone-item {
-    max-width: 100%;
+    gap: 12px;
   }
   .phone-item-image {
     max-height: 180px;
@@ -131,6 +132,8 @@
 @media (max-width: 480px) {
   .phone-list {
     grid-template-columns: repeat(2, 1fr); /* ✅ still two per row on small phones */
+    gap: 8px;
+    row-gap: 20px;
   }
   .phone-item-image {
     max-height: 160px;

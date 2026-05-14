@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { CloudinaryStorage } from "multer-storage-cloudinary";  // ✅ direct import
+import { CloudinaryStorage } from "multer-storage-cloudinary";   // ✅ correct import
 import cloudinary from "../config/cloudinary.js";
 
 import {

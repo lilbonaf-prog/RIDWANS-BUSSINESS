@@ -3,21 +3,30 @@
 }
 
 .phone-display h2 {
-  font-size: max(2vw,24px);
+  font-size: max(2vw, 24px);
   font-weight: 600;
 }
 
 .phone-display-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* smaller min width */
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* slightly wider min width */
   margin-top: 30px;
   gap: 20px;
   row-gap: 40px;
 }
 
-/* Force exactly two cards per row on very small screens */
-@media (max-width: 600px) {
+/* ✅ Force exactly two cards per row on tablets/phones */
+@media (max-width: 768px) {
   .phone-display-list {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ✅ Still two per row on very small phones */
+@media (max-width: 480px) {
+  .phone-display-list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px; /* tighter spacing for small screens */
+    row-gap: 24px;
   }
 }

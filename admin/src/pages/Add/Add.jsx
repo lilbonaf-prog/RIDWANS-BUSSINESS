@@ -211,6 +211,7 @@ const Add = ({ url }) => {
               <option value="Itel">Itel</option>
               <option value="Redmi">Redmi</option>
               <option value="Accessories">Accessories</option>
+               <option value="Accessories">BT Speaker</option>
 
             </select>
 

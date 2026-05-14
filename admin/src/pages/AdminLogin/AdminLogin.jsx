@@ -9,11 +9,14 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // ✅ Use environment variable instead of hard‑coding
+  const API_URL = import.meta.env.VITE_API_URL;
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post("https://api.ridwanbusiness/api/admin/login", { email, password });
+      const res = await axios.post(`${API_URL}/api/admin/login`, { email, password });
       if (res.data.success) {
         localStorage.setItem("adminToken", res.data.token);
         toast.success("Login successful! Redirecting...", { position: "top-center" });

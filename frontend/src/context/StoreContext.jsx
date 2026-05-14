@@ -5,7 +5,8 @@ export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
-  const url = "https://api.ridwanbusiness";
+  // ✅ Use environment variable instead of hard‑coding
+  const url = import.meta.env.VITE_API_URL;
   const [token, setToken] = useState("");
   const [phone_list, setPhoneList] = useState([]);
 
@@ -17,7 +18,7 @@ const StoreContextProvider = (props) => {
     }));
     if (token) {
       try {
-        await axios.post(url + "/api/cart/add", { itemId }, { headers: { token } });
+        await axios.post(`${url}/api/cart/add`, { itemId }, { headers: { token } });
       } catch (err) {
         console.error("Add to cart error:", err.message);
       }
@@ -37,20 +38,20 @@ const StoreContextProvider = (props) => {
     });
     if (token) {
       try {
-        await axios.post(url + "/api/cart/remove", { itemId }, { headers: { token } });
+        await axios.post(`${url}/api/cart/remove`, { itemId }, { headers: { token } });
       } catch (err) {
         console.error("Remove from cart error:", err.message);
       }
     }
   };
 
-  // ✅ Clear cart (new)
+  // ✅ Clear cart
   const clearCart = async () => {
     setCartItems({});
-    localStorage.removeItem("cart"); // if you persist cart locally
+    localStorage.removeItem("cart");
     if (token) {
       try {
-        await axios.post(url + "/api/cart/clear", {}, { headers: { token } });
+        await axios.post(`${url}/api/cart/clear`, {}, { headers: { token } });
       } catch (err) {
         console.error("Clear cart error:", err.message);
       }
@@ -74,7 +75,7 @@ const StoreContextProvider = (props) => {
   // ✅ Fetch products
   const fetchPhoneList = async () => {
     try {
-      const response = await axios.get(url + "/api/product/list");
+      const response = await axios.get(`${url}/api/product/list`);
       if (response.data?.success) {
         setPhoneList(response.data.data);
       } else {
@@ -88,7 +89,7 @@ const StoreContextProvider = (props) => {
   // ✅ Load cart
   const loadCartData = async (token) => {
     try {
-      const response = await axios.post(url + "/api/cart/get", {}, { headers: { token } });
+      const response = await axios.post(`${url}/api/cart/get`, {}, { headers: { token } });
       if (response.data?.success && response.data.cartData) {
         setCartItems(response.data.cartData);
       } else {
@@ -110,7 +111,6 @@ const StoreContextProvider = (props) => {
     }
     loadData();
 
-    // 🔄 Poll for updates every 15s
     const interval = setInterval(fetchPhoneList, 15000);
     return () => clearInterval(interval);
   }, []);
@@ -128,7 +128,7 @@ const StoreContextProvider = (props) => {
     setCartItems,
     addToCart,
     removeFromCart,
-    clearCart,            // ✅ expose clearCart
+    clearCart,
     getTotalCartAmount,
     url,
     token,

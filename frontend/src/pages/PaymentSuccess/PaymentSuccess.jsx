@@ -9,6 +9,9 @@ const PaymentSuccess = () => {
   const [countdown, setCountdown] = useState(15);
   const navigate = useNavigate();
 
+  // ✅ Use environment variable instead of hard‑coding
+  const API_URL = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const reference = queryParams.get("reference");
@@ -18,7 +21,7 @@ const PaymentSuccess = () => {
         try {
           const token = localStorage.getItem("token");
           const response = await axios.get(
-            `https://api.ridwanbusiness/api/order/verify?reference=${reference}`,
+            `${API_URL}/api/order/verify?reference=${reference}`,
             {
               headers: {
                 token,
@@ -53,7 +56,7 @@ const PaymentSuccess = () => {
     } else {
       setStatus("⚠️ No payment reference found.");
     }
-  }, [navigate]);
+  }, [navigate, API_URL]);
 
   return (
     <div className="payment-success">

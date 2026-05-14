@@ -11,7 +11,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
-  const url = "https://api.ridwanbusiness";
+  // ✅ Use environment variable instead of hard‑coding
+  const url = import.meta.env.VITE_API_URL;
 
   return (
     <div>

@@ -12,13 +12,20 @@ const AdminLogin = () => {
   // ✅ Use environment variable instead of hard‑coding
   const API_URL = import.meta.env.VITE_API_URL;
 
+  // 🔹 Debug log to confirm Vercel is injecting correctly
+  console.log("API URL in production:", API_URL);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const res = await axios.post(`${API_URL}/api/admin/login`, { email, password });
+
       if (res.data.success) {
-        localStorage.setItem("adminToken", res.data.token);
+        // Store token if backend provides one
+        if (res.data.token) {
+          localStorage.setItem("adminToken", res.data.token);
+        }
         toast.success("Login successful! Redirecting...", { position: "top-center" });
         setTimeout(() => {
           window.location.href = "/add"; // redirect after login
@@ -26,7 +33,8 @@ const AdminLogin = () => {
       } else {
         toast.error("Login failed. Please try again.", { position: "top-center" });
       }
-    } catch {
+    } catch (err) {
+      console.error("Login error:", err);
       toast.error("Invalid credentials. Please try again.", { position: "top-center" });
     } finally {
       setLoading(false);
@@ -42,12 +50,14 @@ const AdminLogin = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
+          required
         />
         <input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
+          required
         />
         <button type="submit" disabled={loading}>
           {loading ? <span className="spinner"></span> : "Login"}

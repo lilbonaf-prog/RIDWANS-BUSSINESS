@@ -1,103 +1,354 @@
-.Explore-products {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+/* ==========================================
+   RIDWAN BUSINESS
+   PREMIUM PRODUCT CATEGORIES
+========================================== */
+
+.rb-categories {
+  width: 100%;
+  margin: 40px auto;
+  padding: 0;
 }
 
-.Explore-products h1 {
-    color: #262626;
-    font-weight: 500;
-    text-align: center;
+/* ==========================================
+   SECTION HEADING
+========================================== */
+
+.rb-categories-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 30px;
 }
 
-.Explore-products-text {
-    text-align: center;
-    max-width: 60%;
-    color: #808080;
-    line-height: 1.6;
+.rb-categories-label {
+  display: inline-block;
+
+  color: #e50914;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 2px;
+
+  margin-bottom: 10px;
 }
 
-/* Product list */
-.Explore-products-list {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 30px;
-    text-align: center;
-    margin: 20px 0;
-    overflow-x: scroll;
+.rb-categories-heading h3 {
+  color: #171717;
+
+  font-size: clamp(23px, 3vw, 30px);
+  font-weight: 800;
+
+  margin-bottom: 10px;
 }
 
-.Explore-products-list::-webkit-scrollbar {
-    display: none;
+.rb-categories-heading p {
+  color: #777;
+
+  font-size: 14px;
+  line-height: 1.7;
+
+  margin: 0;
 }
 
-/* Product card */
-.Explore-products-list-items {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
+/* ==========================================
+   CATEGORY LIST
+========================================== */
+
+.rb-categories-list {
+  display: flex;
+  align-items: stretch;
+
+  gap: 18px;
+
+  width: 100%;
+  padding: 10px 3px 20px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+
+  scrollbar-width: thin;
+  scrollbar-color: #dddddd transparent;
 }
 
-/* Circle wrapper */
-.circle-image {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* ==========================================
+   CATEGORY CARD
+========================================== */
+
+.rb-category-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  flex: 0 0 145px;
+
+  gap: 14px;
+
+  min-width: 0;
+  min-height: 180px;
+
+  padding: 20px 14px;
+
+  background: #ffffff;
+
+  border: 1px solid #eeeeee;
+  border-radius: 16px;
+
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+
+  cursor: pointer;
+
+  scroll-snap-align: start;
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-/* Image inside circle */
-.circle-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.2s ease;
+.rb-category-card:hover {
+  transform: translateY(-5px);
+
+  border-color: #f2b4b7;
+
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
 }
 
-.circle-image img:hover {
-    transform: scale(1.05);
+/* ==========================================
+   CATEGORY IMAGE CONTAINER
+========================================== */
+
+.rb-category-image-wrapper {
+  width: 105px;
+  height: 105px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+
+  background: #f8f9fb;
+
+  border: 2px solid #f0f0f0;
+
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 
-/* Product name */
-.Explore-products-list-items p {
-    margin-top: 10px;
-    color: #747474;
-    font-size: max(1.4vw, 16px);
+/* ==========================================
+   CATEGORY IMAGE
+========================================== */
+
+.rb-category-image {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  padding: 12px;
+
+  transition: transform 0.3s ease;
 }
 
-/* Divider */
-.Explore-products hr {
-    margin: 10px 0;
-    height: 2px;
-    background-color: #e2e2e2;
-    border: none;
+.rb-category-card:hover .rb-category-image {
+  transform: scale(1.08);
 }
 
-/* Mobile responsiveness */
+/* ==========================================
+   ALL PRODUCTS ICON
+========================================== */
+
+.rb-category-all-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  background: #fff0f1;
+
+  color: #e50914;
+
+  font-size: 24px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+/* ==========================================
+   CATEGORY NAME
+========================================== */
+
+.rb-category-name {
+  color: #333333;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-align: center;
+
+  line-height: 1.5;
+}
+
+/* ==========================================
+   ACTIVE CATEGORY
+========================================== */
+
+.rb-category-card.active {
+  background: #fff8f8;
+
+  border-color: #e50914;
+
+  box-shadow: 0 6px 20px rgba(229, 9, 20, 0.1);
+}
+
+.rb-category-card.active .rb-category-image-wrapper {
+  border-color: #e50914;
+
+  background: #fff1f1;
+}
+
+.rb-category-card.active .rb-category-name {
+  color: #e50914;
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+.rb-category-card:focus-visible {
+  outline: 3px solid #e50914;
+  outline-offset: 4px;
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 992px) {
+  .rb-category-card {
+    flex-basis: 130px;
+
+    min-height: 165px;
+
+    padding: 15px 10px;
+  }
+
+  .rb-category-image-wrapper {
+    width: 95px;
+    height: 95px;
+  }
+
+  .rb-categories-list {
+    gap: 14px;
+  }
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
 @media (max-width: 768px) {
-    .Explore-products-text {
-        max-width: 100%;
-    }
+  .rb-categories {
+    margin: 30px auto;
+  }
 
-    .circle-image {
-        width: 70px;
-        height: 70px;
-    }
+  .rb-categories-heading {
+    margin-bottom: 20px;
+  }
+
+  .rb-categories-heading h3 {
+    font-size: 23px;
+  }
+
+  .rb-categories-heading p {
+    font-size: 13px;
+  }
+
+  .rb-categories-list {
+    gap: 12px;
+  }
+
+  .rb-category-card {
+    flex-basis: 115px;
+
+    min-height: 150px;
+
+    padding: 14px 8px;
+
+    gap: 12px;
+
+    border-radius: 12px;
+  }
+
+  .rb-category-image-wrapper {
+    width: 80px;
+    height: 80px;
+  }
+
+  .rb-category-name {
+    font-size: 12px;
+  }
+
+  .rb-category-all-icon {
+    font-size: 19px;
+  }
 }
 
-.Explore-products-list .circle-image .active {
-    border: 4px solid tomato;
-    padding: 2px;
+/* ==========================================
+   SMALL PHONES
+========================================== */
+
+@media (max-width: 480px) {
+  .rb-category-card {
+    flex-basis: 105px;
+
+    min-height: 140px;
+  }
+
+  .rb-category-image-wrapper {
+    width: 72px;
+    height: 72px;
+  }
+
+  .rb-category-name {
+    font-size: 11px;
+  }
+
+  .rb-categories-label {
+    font-size: 10px;
+  }
 }
 
-@media (max-width:1050px) {
-    .Explore-products-text{
-        max-width: 100%;
-        font-size: 14px;
-    }
+/* ==========================================
+   REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-categories-list {
+    scroll-behavior: auto;
+  }
+
+  .rb-category-card,
+  .rb-category-image {
+    transition: none;
+  }
+
+  .rb-category-card:hover,
+  .rb-category-card:hover .rb-category-image {
+    transform: none;
+  }
 }

@@ -1,141 +1,512 @@
-/* ✅ Product list container */
-.phone-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
-  padding: 8px;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
+/* ==========================================
+   RIDWAN BUSINESS
+   PREMIUM PRODUCT CARD STYLING
+========================================== */
 
-/* ✅ Product card */
 .phone-item {
   width: 100%;
-  max-width: 100%;   /* ✅ allow grid to control width */
-  margin: 0 auto;
-  border-radius: 15px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease;
-  animation: fadeIn 0.6s ease;
-  background: #fff;
+  min-width: 0;
+
   display: flex;
   flex-direction: column;
+
+  background: #ffffff;
+
+  border: 1px solid #e9e9ee;
+  border-radius: 16px;
+
+  overflow: hidden;
+
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .phone-item:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
+
+  border-color: #f0c5c8;
+
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
 }
 
-/* IMAGE CONTAINER */
+/* ==========================================
+   PRODUCT IMAGE
+========================================== */
+
+.phone-item-image-link {
+  display: block;
+
+  width: 100%;
+
+  text-decoration: none;
+}
+
 .phone-item-image-container {
   width: 100%;
-  overflow: hidden;
-  border-radius: 15px 15px 0 0;
+  height: 240px;
+
   display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: center;
+
   position: relative;
-}
 
-/* IMAGE ITSELF */
-.phone-item-image {
-  width: 100%;
-  max-height: 220px;
-  height: auto;
-  object-fit: contain;
-  background: #fff;
-  object-position: center;
-  display: block;
-}
-
-/* INFO */
-.phone-item-info {
-  padding: 16px;
-  flex-grow: 1;
-}
-
-/* TITLE + RATING */
-.phone-item-rating {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.phone-item-rating p {
-  font-size: 18px;
-  font-weight: 500;
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
+
+  background: linear-gradient(
+    145deg,
+    #f8f9fb,
+    #ffffff
+  );
 }
 
-.phone-item-rating img {
-  width: 70px;
+.phone-item-image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+
+  padding: 20px;
+
+  object-fit: contain;
+  object-position: center;
+
+  transition: transform 0.4s ease;
 }
+
+.phone-item:hover .phone-item-image {
+  transform: scale(1.06);
+}
+
+/* ==========================================
+   PRODUCT INFORMATION
+========================================== */
+
+.phone-item-info {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1;
+
+  padding: 18px;
+
+  gap: 15px;
+}
+
+.phone-item-details {
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+}
+
+/* ==========================================
+   PRODUCT CATEGORY LABEL
+========================================== */
+
+.phone-item-category-label {
+  color: #e50914;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 1.2px;
+
+  text-transform: uppercase;
+}
+
+/* ==========================================
+   PRODUCT NAME
+   STANDARD + WEBKIT LINE CLAMP
+========================================== */
+
+.phone-item-name {
+  display: -webkit-box;
+
+  -webkit-box-orient: vertical;
+
+  /* Standard CSS property */
+  line-clamp: 2;
+
+  /* Chrome, Safari and other WebKit browsers */
+  -webkit-line-clamp: 2;
+
+  overflow: hidden;
+
+  color: #1a1a1a;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  line-height: 1.5;
+
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.phone-item-name:hover {
+  color: #e50914;
+}
+
+/* ==========================================
+   PRODUCT DESCRIPTION
+   STANDARD + WEBKIT LINE CLAMP
+========================================== */
 
 .phone-item-desc {
-  color: #676767;
-  font-size: 13px;
-  line-height: 1.4;
   display: -webkit-box;
+
   -webkit-box-orient: vertical;
+
+  /* Standard CSS property */
+  line-clamp: 2;
+
+  /* Browser compatibility */
   -webkit-line-clamp: 2;
+
   overflow: hidden;
+
+  color: #777777;
+
+  font-size: 12px;
+
+  line-height: 1.7;
+
+  margin: 0;
 }
+
+/* ==========================================
+   PRODUCT BOTTOM SECTION
+========================================== */
+
+.phone-item-bottom {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  margin-top: auto;
+}
+
+/* ==========================================
+   PRODUCT PRICE
+========================================== */
 
 .phone-item-price {
-  color: tomato;
-  font-size: 20px;
-  font-weight: 600;
-  margin-top: 8px;
+  color: #e50914;
+
+  font-size: 21px;
+  font-weight: 800;
+
+  letter-spacing: -0.4px;
+
+  margin: 0;
 }
 
-/* ADD BUTTON + COUNTER */
-.phone-item-image-container .add {
-  width: 30px;
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
-  cursor: pointer;
-  border-radius: 50%;
-}
+/* ==========================================
+   ADD TO CART BUTTON
+========================================== */
 
-.phone-item-counter {
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
+.phone-item-add-btn {
+  width: 100%;
+  min-height: 43px;
+
   display: flex;
   align-items: center;
+  justify-content: center;
+
   gap: 10px;
-  padding: 6px;
-  border-radius: 50px;
-  background-color: white;
+
+  padding: 11px 15px;
+
+  background: #e50914;
+  color: #ffffff;
+
+  border: 1px solid #e50914;
+  border-radius: 9px;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-.phone-item-counter img {
-  width: 30px;
+.phone-item-add-btn:hover {
+  background: #c80712;
+
+  border-color: #c80712;
+
+  color: #ffffff;
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 20px rgba(229, 9, 20, 0.2);
 }
 
-/* 🔹 Responsive tweaks */
+.phone-item-add-btn:active {
+  transform: scale(0.98);
+}
+
+/* ==========================================
+   CART QUANTITY CONTROLS
+========================================== */
+
+.phone-item-counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  min-height: 43px;
+
+  padding: 4px;
+
+  background: #fff4f4;
+
+  border: 1px solid #ffd4d6;
+  border-radius: 9px;
+}
+
+.phone-item-quantity-btn {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+
+  border: 1px solid #f2d4d5;
+  border-radius: 7px;
+
+  color: #e50914;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.phone-item-quantity-btn:hover {
+  background: #e50914;
+
+  color: #ffffff;
+
+  border-color: #e50914;
+}
+
+.phone-item-quantity {
+  font-size: 15px;
+  font-weight: 700;
+
+  color: #222222;
+}
+
+/* ==========================================
+   VIEW DETAILS LINK
+========================================== */
+
+.phone-item-details-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  color: #444444;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  text-decoration: none;
+
+  padding: 5px;
+
+  transition: color 0.2s ease;
+}
+
+.phone-item-details-link:hover {
+  color: #e50914;
+}
+
+/* ==========================================
+   INVALID PRODUCT
+========================================== */
+
+.phone-item-error {
+  padding: 20px;
+
+  color: #e50914;
+
+  text-align: center;
+
+  font-size: 13px;
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+.phone-item a:focus-visible,
+.phone-item button:focus-visible {
+  outline: 3px solid #e50914;
+
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   TABLET
+   992px AND BELOW
+========================================== */
+
+@media (max-width: 992px) {
+  .phone-item-image-container {
+    height: 210px;
+  }
+
+  .phone-item-info {
+    padding: 14px;
+  }
+
+  .phone-item-name {
+    font-size: 15px;
+  }
+
+  .phone-item-price {
+    font-size: 19px;
+  }
+}
+
+/* ==========================================
+   MOBILE
+   768px AND BELOW
+========================================== */
+
 @media (max-width: 768px) {
-  .phone-list {
-    grid-template-columns: repeat(2, 1fr); /* ✅ two per row on tablets/phones */
+  .phone-item {
+    border-radius: 12px;
+  }
+
+  .phone-item-image-container {
+    height: 180px;
+  }
+
+  .phone-item-image {
+    padding: 12px;
+  }
+
+  .phone-item-info {
+    padding: 12px;
+
     gap: 12px;
   }
-  .phone-item-image {
-    max-height: 180px;
+
+  .phone-item-name {
+    font-size: 14px;
+  }
+
+  .phone-item-desc {
+    font-size: 11px;
+  }
+
+  .phone-item-price {
+    font-size: 17px;
+  }
+
+  .phone-item-add-btn {
+    font-size: 12px;
+
+    padding: 10px;
   }
 }
 
+/* ==========================================
+   SMALL MOBILE DEVICES
+   480px AND BELOW
+========================================== */
+
 @media (max-width: 480px) {
-  .phone-list {
-    grid-template-columns: repeat(2, 1fr); /* ✅ still two per row on small phones */
-    gap: 8px;
-    row-gap: 20px;
+  .phone-item-image-container {
+    height: 155px;
   }
+
   .phone-item-image {
-    max-height: 160px;
+    padding: 10px;
+  }
+
+  .phone-item-info {
+    padding: 10px;
+  }
+
+  .phone-item-category-label {
+    font-size: 9px;
+
+    letter-spacing: 0.5px;
+  }
+
+  .phone-item-name {
+    font-size: 12px;
+  }
+
+  .phone-item-desc {
+    font-size: 10px;
+  }
+
+  .phone-item-price {
+    font-size: 15px;
+  }
+
+  .phone-item-add-btn {
+    min-height: 38px;
+
+    font-size: 11px;
+
+    gap: 6px;
+  }
+
+  .phone-item-quantity-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .phone-item-details-link {
+    font-size: 11px;
+  }
+}
+
+/* ==========================================
+   REDUCED MOTION ACCESSIBILITY
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .phone-item,
+  .phone-item-image,
+  .phone-item-add-btn,
+  .phone-item-quantity-btn,
+  .phone-item-name,
+  .phone-item-details-link {
+    transition: none;
+  }
+
+  .phone-item:hover,
+  .phone-item:hover .phone-item-image,
+  .phone-item-add-btn:hover {
+    transform: none;
   }
 }

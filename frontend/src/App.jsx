@@ -1,59 +1,140 @@
-import React, { useState } from 'react';
-import Navigationbar from "./components/navbar/Navbar";
-import { Route, Routes } from 'react-router-dom';
+import { useState } from "react";
+import { Route, Routes } from "react-router-dom";
 
-// Pages
-import Home from './pages/Home/Home';
-import Cart from './pages/Cart/Cart';
-import PlaceOrder from './pages/PlaceOrder/PlaceOrder';
-import PaymentSuccess from './pages/PaymentSuccess/PaymentSuccess.jsx';
-// import Contact from './pages/Contact/Contact';
-// import Wishlist from './pages/Wishlist/Wishlist';
+// ==========================================
+// RIDWAN BUSINESS
+// MAIN APPLICATION ROUTES
+// ==========================================
 
 // Components
-import Footer from './components/Footer/Footer';
-import LoginPopup from './components/LoginPopup/LoginPopup';
-import MyOrders from './pages/MyOrders/MyOrders';
-import PhoneDisplay from './components/PhoneDisplay/PhoneDisplay';
-import AboutUs from './components/AboutUs/AboutUs';
-import PrivacyPolicy from './components/PrivacyPolicy/PrivacyPolicy';
-import ProductsPage from './pages/ProductsPage';
-import ProductDetail from "./pages/ProductDetail/ProductDetail.jsx";
-// import Verify from './pages/Verify/Verify';
+import Navigationbar from "./components/navbar/Navbar";
+import Footer from "./components/Footer/Footer";
+import LoginPopup from "./components/LoginPopup/LoginPopup";
+
+// Pages
+import Home from "./pages/Home/Home";
+import Cart from "./pages/Cart/Cart";
+import PlaceOrder from "./pages/PlaceOrder/PlaceOrder";
+import PaymentSuccess from "./pages/PaymentSuccess/PaymentSuccess";
+import MyOrders from "./pages/MyOrders/MyOrders";
+import ProductDetail from "./pages/ProductDetail/ProductDetail";
+
+// Product components
+import PhoneDisplay from "./components/PhoneDisplay/PhoneDisplay";
+
+// Information pages
+import AboutUs from "./components/AboutUs/AboutUs";
+import PrivacyPolicy from "./components/PrivacyPolicy/PrivacyPolicy";
+
+// ==========================================
+// MAIN APP COMPONENT
+// ==========================================
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
 
   return (
     <>
-      {/* Popup controlled only by state */}
-      {showLogin && <LoginPopup setShowLogin={setShowLogin} />}
+      {/* ====================================
+          LOGIN POPUP
+      ==================================== */}
 
-      <div className='app'>
-        <Navigationbar setShowLogin={setShowLogin} />
+      {showLogin && (
+        <LoginPopup
+          setShowLogin={setShowLogin}
+        />
+      )}
+
+      {/* ====================================
+          APPLICATION CONTENT
+      ==================================== */}
+
+      <div className="app">
+
+        {/* NAVIGATION BAR */}
+
+        <Navigationbar
+          setShowLogin={setShowLogin}
+        />
+
+        {/* ==================================
+            WEBSITE ROUTES
+        ================================== */}
 
         <Routes>
-          {/* Main Routes */}
-          <Route path='/' element={<Home />} />
-          <Route path='/cart' element={<Cart />} />
-          <Route path='/order' element={<PlaceOrder />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path='/myorders' element={<MyOrders />} />
-          <Route path="/products" element={<PhoneDisplay category="All" />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/" element={<ProductsPage />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
 
+          {/* HOME */}
 
+          <Route
+            path="/"
+            element={<Home />}
+          />
 
+          {/* PRODUCTS */}
 
-          {/* Extra Routes for Navbar
-          <Route path='/contact' element={<Contact />} />
-          <Route path='/wishlist' element={<Wishlist />} />
-          */}
+          <Route
+            path="/products"
+            element={
+              <PhoneDisplay category="All" />
+            }
+          />
+
+          {/* PRODUCT DETAILS */}
+
+          <Route
+            path="/product/:id"
+            element={<ProductDetail />}
+          />
+
+          {/* SHOPPING CART */}
+
+          <Route
+            path="/cart"
+            element={<Cart />}
+          />
+
+          {/* CHECKOUT */}
+
+          <Route
+            path="/order"
+            element={<PlaceOrder />}
+          />
+
+          {/* PAYSTACK PAYMENT VERIFICATION */}
+
+          <Route
+            path="/payment-success"
+            element={<PaymentSuccess />}
+          />
+
+          {/* CUSTOMER ORDERS */}
+
+          <Route
+            path="/myorders"
+            element={<MyOrders />}
+          />
+
+          {/* ABOUT US */}
+
+          <Route
+            path="/about"
+            element={<AboutUs />}
+          />
+
+          {/* PRIVACY POLICY */}
+
+          <Route
+            path="/privacy"
+            element={<PrivacyPolicy />}
+          />
+
         </Routes>
+
       </div>
+
+      {/* ====================================
+          FOOTER
+      ==================================== */}
 
       <Footer />
     </>

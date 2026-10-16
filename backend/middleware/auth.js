@@ -1,28 +1,131 @@
 import jwt from "jsonwebtoken";
 
+// ==========================================
+// RIDWAN BUSINESS
+// JWT AUTHENTICATION MIDDLEWARE
+// ==========================================
+
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-
-  const token = authHeader.split(" ")[1]; // remove "Bearer"
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log("Decoded user token:", decoded);
+    // ======================================
+    // GET AUTHORIZATION HEADER
+    // ======================================
 
-    // ✅ Only id is guaranteed in user tokens
-    req.user = { id: decoded.id };
+    const authorizationHeader =
+      req.headers.authorization || "";
 
-    if (!req.user.id) {
-      return res.status(401).json({ message: "Invalid token payload" });
+    // Temporary compatibility with existing
+    // frontend requests using headers: { token }
+
+    const legacyTokenHeader = req.headers.token;
+
+    // ======================================
+    // EXTRACT JWT TOKEN
+    // ======================================
+
+    let token = null;
+
+    // Preferred format:
+    // Authorization: Bearer YOUR_TOKEN
+
+    const bearerMatch = authorizationHeader.match(
+      /^Bearer\s+(.+)$/i
+    );
+
+    if (bearerMatch) {
+      token = bearerMatch[1].trim();
     }
 
+    // Support existing frontend until its
+    // authentication headers are updated.
+
+    if (!token && typeof legacyTokenHeader === "string") {
+      token = legacyTokenHeader.trim();
+    }
+
+    // ======================================
+    // CHECK TOKEN
+    // ======================================
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required. Please sign in.",
+      });
+    }
+
+    // ======================================
+    // CHECK JWT CONFIGURATION
+    // ======================================
+
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is not configured.");
+
+      return res.status(500).json({
+        success: false,
+        message: "Authentication service unavailable.",
+      });
+    }
+
+    // ======================================
+    // VERIFY TOKEN SIGNATURE
+    // ======================================
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    // ======================================
+    // VALIDATE USER INFORMATION
+    // ======================================
+
+    if (
+      !decoded ||
+      typeof decoded !== "object" ||
+      !decoded.id
+    ) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid authentication token.",
+      });
+    }
+
+    // ======================================
+    // ATTACH AUTHENTICATED USER
+    // ======================================
+
+    req.user = {
+      id: decoded.id,
+    };
+
+    // ======================================
+    // CONTINUE TO PROTECTED ROUTE
+    // ======================================
+
     next();
-  } catch (err) {
-    console.error("JWT verification error:", err.message);
-    return res.status(401).json({ message: "Invalid token" });
+
+  } catch (error) {
+
+    // ======================================
+    // EXPIRED TOKEN
+    // ======================================
+
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({
+        success: false,
+        message: "Your session has expired. Please sign in again.",
+      });
+    }
+
+    // ======================================
+    // INVALID TOKEN
+    // ======================================
+
+    return res.status(401).json({
+      success: false,
+      message: "Invalid authentication token.",
+    });
   }
 };
 

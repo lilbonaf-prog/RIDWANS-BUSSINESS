@@ -10,58 +10,101 @@ import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import adminRoutes from "./routes/admin.js";
 
+// ==========================================
+// RIDWAN BUSINESS
+// BACKEND SERVER
+// ==========================================
+
 const app = express();
 
-// Port
 const port = process.env.PORT || 4000;
 
+// ==========================================
+// JSON MIDDLEWARE
+// ==========================================
 
-// Middlewares
-app.use(express.json());
+// Preserve the original Paystack webhook
+// request body for signature verification.
 
-
-// CORS
 app.use(
-  cors({
-    origin: [
-      process.env.FRONTEND_URL,
-      process.env.ADMIN_URL
-    ],
-    credentials: true
+  express.json({
+    verify: (req, res, buffer) => {
+      const requestPath =
+        req.originalUrl.split("?")[0];
+
+      if (requestPath === "/api/order/webhook") {
+        req.rawBody = Buffer.from(buffer);
+      }
+    },
   })
 );
 
+// ==========================================
+// CORS CONFIGURATION
+// ==========================================
 
-// Database
-connectDB();
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.ADMIN_URL,
+].filter(Boolean);
 
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 
-// API Routes
+// ==========================================
+// API ROUTES
+// ==========================================
+
+// Products
 app.use("/api/product", productRouter);
 
+// Product images
 app.use(
   "/images",
   express.static("uploads")
 );
 
+// Users
 app.use("/api/user", userRouter);
 
+// Shopping cart
 app.use("/api/cart", cartRouter);
 
+// Orders and payments
 app.use("/api/order", orderRouter);
 
+// Admin dashboard
 app.use("/api/admin", adminRoutes);
 
+// ==========================================
+// HEALTH CHECK
+// ==========================================
 
-// Test route
 app.get("/", (req, res) => {
-  res.send("API Working");
+  res.send("Ridwan Business API Working");
 });
 
+// ==========================================
+// START SERVER SAFELY
+// ==========================================
 
-// Start server
-app.listen(port, () => {
-  console.log(
-    `Server Started on port ${port}`
-  );
-});
+const startServer = async () => {
+  // Wait until MongoDB is connected.
+
+  await connectDB();
+
+  // Start accepting requests only
+  // after the database is ready.
+
+  app.listen(port, () => {
+    console.log(
+      `Ridwan Business server running on port ${port}`
+    );
+  });
+};
+
+startServer();

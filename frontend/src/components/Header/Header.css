@@ -1,72 +1,710 @@
-.hero-banner {
-  background-image: url('/images/hero-banner.jpg') !important;
-  background-size: cover !important;       /* fill the whole banner */
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  min-height: 70vh !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  padding: 0 20px !important;
-  color: white !important;
-  position: relative !important;
+/* ==========================================
+   RIDWAN BUSINESS
+   PREMIUM HERO BANNER
+   VERSION 2.0
+========================================== */
+
+
+/* ==========================================
+   HERO MAIN CONTAINER
+========================================== */
+
+.rb-hero {
+  position: relative;
+
+  width: 100%;
+  min-height: 650px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  overflow: hidden;
+  isolation: isolate;
+
+  box-sizing: border-box;
+
+  color: #ffffff;
+
+  background-color: #080c18;
+
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(5, 8, 18, 0.96) 0%,
+      rgba(5, 8, 18, 0.88) 30%,
+      rgba(5, 8, 18, 0.65) 55%,
+      rgba(5, 8, 18, 0.28) 100%
+    ),
+    url("/images/hero-banner.jpg");
+
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
-.hero-overlay {
-  padding: 20px;
-  border-radius: 8px;
+
+/* ==========================================
+   HERO CONTAINER
+========================================== */
+
+.rb-hero-container {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+
+
+/* ==========================================
+   HERO CONTENT
+========================================== */
+
+.rb-hero-content {
+  position: relative;
+
+  width: 100%;
+  max-width: 680px;
+
+  text-align: left;
+}
+
+
+/* ==========================================
+   WELCOME BADGE
+========================================== */
+
+.rb-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 10px;
+
+  max-width: 100%;
+
+  padding: 11px 18px;
+
+  margin-bottom: 30px;
+
+  background: rgba(255, 255, 255, 0.09);
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50px;
+
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 1.8px;
+  line-height: 1.5;
+
+  text-transform: uppercase;
+}
+
+
+/* ==========================================
+   WELCOME BADGE DOT
+========================================== */
+
+.rb-hero-badge-dot {
   display: inline-block;
-  background: transparent !important;      /* remove black box */
+
+  width: 9px;
+  height: 9px;
+
+  flex-shrink: 0;
+
+  background: #ff3545;
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 0 4px rgba(255, 53, 69, 0.12),
+    0 0 14px rgba(255, 53, 69, 0.7);
 }
 
-.hero-title {
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.6) !important;
-  font-size: 2.5rem !important;
-  font-weight: 700 !important;
+
+/* ==========================================
+   MAIN HERO HEADING
+========================================== */
+
+.rb-hero-title {
+  max-width: 750px;
+
+  margin: 0 0 26px;
+
+  color: #ffffff;
+
+  font-size: clamp(42px, 5.5vw, 76px);
+  font-weight: 800;
+
+  line-height: 1.12;
+
+  letter-spacing: -2px;
+
+  overflow-wrap: break-word;
+
+  text-shadow:
+    0 3px 15px rgba(0, 0, 0, 0.12);
 }
 
-.hero-subtitle {
-  text-shadow: 1px 1px 6px rgba(0,0,0,0.5) !important;
-  font-size: 1.2rem !important;
-  margin-bottom: 30px !important;
-  color: whitesmoke !important;
+
+/* ==========================================
+   RED HIGHLIGHT TEXT
+========================================== */
+
+.rb-hero-title span {
+  display: inline-block;
+
+  color: #ff3545;
 }
 
-.hero-buttons {
-  display: flex !important;
-  justify-content: center !important;
-  gap: 15px !important;
-  flex-wrap: wrap !important;
+
+/* ==========================================
+   HERO DESCRIPTION
+========================================== */
+
+.rb-hero-description {
+  width: 100%;
+  max-width: 560px;
+
+  margin: 0 0 38px;
+
+  color: #e0e2e8;
+
+  font-size: 17px;
+  font-weight: 400;
+
+  line-height: 1.85;
+
+  letter-spacing: 0.1px;
+
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Responsive adjustments */
+
+/* ==========================================
+   SHOPPING BUTTON CONTAINER
+========================================== */
+
+.rb-hero-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 16px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 40px;
+}
+
+
+/* ==========================================
+   PRIMARY SHOP NOW BUTTON
+========================================== */
+
+.rb-hero-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 14px;
+
+  min-height: 54px;
+
+  padding: 15px 30px;
+
+  background: #e50914;
+
+  color: #ffffff;
+
+  border: 1px solid #e50914;
+  border-radius: 9px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  line-height: 1.4;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+
+/* PRIMARY BUTTON HOVER */
+
+.rb-hero-btn-primary:hover {
+  background: #ff3545;
+
+  border-color: #ff3545;
+
+  color: #ffffff;
+
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 12px 30px rgba(229, 9, 20, 0.3);
+}
+
+
+/* PRIMARY BUTTON ACTIVE */
+
+.rb-hero-btn-primary:active {
+  transform: translateY(0);
+}
+
+
+/* ==========================================
+   SECONDARY VIEW CART BUTTON
+========================================== */
+
+.rb-hero-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 54px;
+
+  padding: 15px 30px;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  color: #ffffff;
+
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 9px;
+
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+
+  font-size: 15px;
+  font-weight: 700;
+
+  line-height: 1.4;
+
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+
+/* SECONDARY BUTTON HOVER */
+
+.rb-hero-btn-secondary:hover {
+  background: #ffffff;
+
+  border-color: #ffffff;
+
+  color: #111111;
+
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+
+/* SECONDARY BUTTON ACTIVE */
+
+.rb-hero-btn-secondary:active {
+  transform: translateY(0);
+}
+
+
+/* ==========================================
+   BUTTON ACCESSIBILITY
+========================================== */
+
+.rb-hero-buttons a:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 4px;
+}
+
+
+/* ==========================================
+   PRODUCT CATEGORY LABELS
+========================================== */
+
+.rb-hero-categories {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  flex-wrap: wrap;
+
+  gap: 14px;
+
+  color: #c4c7d0;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  line-height: 1.7;
+
+  letter-spacing: 0.2px;
+}
+
+
+/* ==========================================
+   CATEGORY SEPARATOR DOTS
+========================================== */
+
+.rb-hero-dot {
+  color: #ff3545;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  line-height: 1;
+}
+
+
+/* ==========================================
+   BOTTOM ACCENT LINE
+========================================== */
+
+.rb-hero-bottom-line {
+  position: absolute;
+
+  bottom: 0;
+  left: 0;
+
+  z-index: 3;
+
+  width: 100%;
+  height: 4px;
+
+  background: linear-gradient(
+    90deg,
+    #e50914 0%,
+    #ff5963 35%,
+    rgba(255, 89, 99, 0) 85%
+  );
+}
+
+
+/* ==========================================
+   LARGE DESKTOP
+   1400px AND BELOW
+========================================== */
+
+@media (max-width: 1400px) {
+
+  .rb-hero {
+    min-height: 620px;
+  }
+
+  .rb-hero-container {
+    padding-top: 85px;
+    padding-bottom: 85px;
+  }
+
+  .rb-hero-content {
+    max-width: 650px;
+  }
+
+}
+
+
+/* ==========================================
+   TABLET / SMALL LAPTOP
+   992px AND BELOW
+========================================== */
+
+@media (max-width: 992px) {
+
+  .rb-hero {
+    min-height: 580px;
+
+    background-position: 58% center;
+
+    background-image:
+      linear-gradient(
+        90deg,
+        rgba(5, 8, 18, 0.94) 0%,
+        rgba(5, 8, 18, 0.83) 50%,
+        rgba(5, 8, 18, 0.4) 100%
+      ),
+      url("/images/hero-banner.jpg");
+  }
+
+  .rb-hero-container {
+    padding-top: 75px;
+    padding-bottom: 75px;
+  }
+
+  .rb-hero-content {
+    max-width: 600px;
+  }
+
+  .rb-hero-title {
+    font-size: clamp(42px, 5vw, 58px);
+  }
+
+  .rb-hero-description {
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  .rb-hero-buttons {
+    gap: 14px;
+  }
+
+}
+
+
+/* ==========================================
+   MOBILE DEVICES
+   768px AND BELOW
+========================================== */
+
 @media (max-width: 768px) {
-  .hero-banner {
-    min-height: 60vh !important;
-    background-size: cover !important;     /* still fill area */
+
+  .rb-hero {
+    min-height: 560px;
+
+    background-position: center center;
+
+    background-image:
+      linear-gradient(
+        90deg,
+        rgba(5, 8, 18, 0.91) 0%,
+        rgba(5, 8, 18, 0.79) 100%
+      ),
+      url("/images/hero-banner.jpg");
   }
 
-  .hero-title {
-    font-size: 2rem !important;
+  .rb-hero-container {
+    padding-top: 70px;
+    padding-bottom: 70px;
   }
 
-  .hero-subtitle {
-    font-size: 1rem !important;
+  .rb-hero-content {
+    width: 100%;
+    max-width: 100%;
   }
+
+  /* BADGE */
+
+  .rb-hero-badge {
+    padding: 9px 14px;
+
+    margin-bottom: 25px;
+
+    font-size: 10px;
+
+    letter-spacing: 1.3px;
+  }
+
+  /* HEADING */
+
+  .rb-hero-title {
+    font-size: clamp(36px, 8vw, 48px);
+
+    line-height: 1.15;
+
+    letter-spacing: -1px;
+
+    margin-bottom: 20px;
+  }
+
+  /* DESCRIPTION */
+
+  .rb-hero-description {
+    max-width: 100%;
+
+    font-size: 14px;
+
+    line-height: 1.8;
+
+    margin-bottom: 28px;
+  }
+
+  /* BUTTONS */
+
+  .rb-hero-buttons {
+    gap: 12px;
+
+    margin-bottom: 30px;
+  }
+
+  .rb-hero-btn-primary,
+  .rb-hero-btn-secondary {
+    min-height: 48px;
+
+    padding: 13px 22px;
+
+    font-size: 13px;
+
+    border-radius: 8px;
+  }
+
+  /* CATEGORIES */
+
+  .rb-hero-categories {
+    gap: 10px;
+
+    font-size: 11px;
+  }
+
+  .rb-hero-dot {
+    font-size: 15px;
+  }
+
 }
+
+
+/* ==========================================
+   SMALL MOBILE DEVICES
+   480px AND BELOW
+========================================== */
 
 @media (max-width: 480px) {
-  .hero-banner {
-    min-height: 50vh !important;
-    background-size: cover !important;     /* keep full coverage */
+
+  .rb-hero {
+    min-height: 520px;
   }
 
-  .hero-title {
-    font-size: 1.4rem !important;
+  .rb-hero-container {
+    padding-top: 60px;
+    padding-bottom: 60px;
   }
 
-  .hero-subtitle {
-    font-size: 0.9rem !important;
+  .rb-hero-badge {
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+    padding: 8px 12px;
+
+    margin-bottom: 22px;
   }
+
+  .rb-hero-title {
+    font-size: clamp(32px, 9vw, 40px);
+
+    letter-spacing: -0.8px;
+
+    margin-bottom: 18px;
+  }
+
+  .rb-hero-description {
+    font-size: 13px;
+
+    line-height: 1.75;
+
+    margin-bottom: 25px;
+  }
+
+  .rb-hero-buttons {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+
+    width: 100%;
+
+    margin-bottom: 28px;
+  }
+
+  .rb-hero-btn-primary,
+  .rb-hero-btn-secondary {
+    width: 100%;
+
+    min-width: 0;
+    min-height: 45px;
+
+    padding: 12px 10px;
+
+    font-size: 12px;
+
+    gap: 8px;
+  }
+
+  .rb-hero-categories {
+    gap: 8px;
+
+    font-size: 10px;
+  }
+
+}
+
+
+/* ==========================================
+   VERY SMALL SCREENS
+   350px AND BELOW
+========================================== */
+
+@media (max-width: 350px) {
+
+  .rb-hero {
+    min-height: 570px;
+  }
+
+  .rb-hero-title {
+    font-size: 30px;
+  }
+
+  .rb-hero-badge {
+    font-size: 8px;
+  }
+
+  .rb-hero-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .rb-hero-btn-primary,
+  .rb-hero-btn-secondary {
+    width: 100%;
+  }
+
+  .rb-hero-categories {
+    font-size: 9px;
+  }
+
+}
+
+
+/* ==========================================
+   REDUCED MOTION ACCESSIBILITY
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .rb-hero-btn-primary,
+  .rb-hero-btn-secondary {
+    transition: none;
+  }
+
+  .rb-hero-btn-primary:hover,
+  .rb-hero-btn-secondary:hover {
+    transform: none;
+  }
+
 }

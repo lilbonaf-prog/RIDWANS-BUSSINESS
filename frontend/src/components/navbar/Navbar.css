@@ -1,33 +1,951 @@
-.navbar-profile {
+/* ==========================================
+   RIDWAN BUSINESS
+   PREMIUM NAVIGATION BAR
+========================================== */
+
+.rb-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1050;
+
+  width: 100%;
+
+  background: #ffffff;
+
+  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.07);
+}
+
+/* ==========================================
+   TOP INFORMATION BAR
+========================================== */
+
+.rb-nav-topbar {
+  background: #101522;
+  color: #ffffff;
+}
+
+.rb-nav-topbar-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+
+  padding: 9px 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  letter-spacing: 0.3px;
+}
+
+.rb-nav-topbar a {
+  color: #eeeeee;
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.rb-nav-topbar a:hover {
+  color: #ff3545;
+}
+
+/* ==========================================
+   MAIN NAVIGATION
+========================================== */
+
+.rb-nav-main {
+  width: 100%;
+  background: #ffffff;
+}
+
+.rb-nav-main-inner {
+  max-width: 1320px;
+  min-height: 86px;
+
+  margin: 0 auto;
+  padding: 14px 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+}
+
+/* ==========================================
+   BRAND LOGO
+========================================== */
+
+.rb-nav-brand {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 12px;
+
+  flex-shrink: 0;
+
+  text-decoration: none;
+}
+
+.rb-nav-brand-icon {
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  background: #101522;
+
+  border: 2px solid #e50914;
+  border-radius: 12px;
+
+  color: #ffffff;
+
+  font-size: 17px;
+  font-weight: 900;
+
+  letter-spacing: -1px;
+}
+
+.rb-nav-brand-text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+
+  line-height: 1.1;
+}
+
+.rb-nav-brand-text span {
+  color: #151515;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  letter-spacing: 0.5px;
+}
+
+.rb-nav-brand-text strong {
+  color: #e50914;
+
+  font-size: 17px;
+  font-weight: 900;
+
+  letter-spacing: 0.6px;
+}
+
+/* ==========================================
+   SEARCH BAR
+========================================== */
+
+.rb-nav-search {
+  display: flex;
+  align-items: center;
+
+  flex: 1;
+
+  min-width: 0;
+  max-width: 600px;
+  height: 48px;
+
+  padding-left: 16px;
+
+  background: #f8f9fb;
+
+  border: 1px solid #e5e5e9;
+  border-radius: 10px;
+
+  overflow: hidden;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.rb-nav-search:focus-within {
+  background: #ffffff;
+
+  border-color: #e50914;
+
+  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.08);
+}
+
+.rb-nav-search-icon {
+  color: #777777;
+  flex-shrink: 0;
+}
+
+.rb-nav-search input {
+  flex: 1;
+
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+
+  padding: 0 14px;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #222222;
+
+  font-size: 13px;
+}
+
+.rb-nav-search input::placeholder {
+  color: #999999;
+}
+
+.rb-nav-search input::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+
+/* SEARCH BUTTON */
+
+.rb-nav-search button {
+  height: 100%;
+  min-width: 110px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  padding: 0 20px;
+
+  background: #e50914;
+
+  color: #ffffff;
+
+  border: none;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: background-color 0.2s ease;
+}
+
+.rb-nav-search button:hover {
+  background: #c80712;
+}
+
+/* ==========================================
+   NAVBAR ACTIONS
+========================================== */
+
+.rb-nav-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 22px;
+
+  flex-shrink: 0;
+}
+
+.rb-nav-action {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  color: #252525;
+
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.rb-nav-action:hover {
+  color: #e50914;
+}
+
+.rb-nav-action-text {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ==========================================
+   CART ICON AND BADGE
+========================================== */
+
+.rb-nav-cart-icon {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rb-nav-cart-count {
+  position: absolute;
+
+  top: -10px;
+  right: -12px;
+
+  min-width: 20px;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 4px;
+
+  background: #e50914;
+
+  color: #ffffff;
+
+  border: 2px solid #ffffff;
+  border-radius: 50px;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+/* ==========================================
+   SIGN IN BUTTON
+========================================== */
+
+.rb-nav-login-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  min-height: 43px;
+
+  padding: 11px 19px;
+
+  background: #101522;
+
+  color: #ffffff;
+
+  border: 1px solid #101522;
+  border-radius: 9px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.rb-nav-login-btn:hover {
+  background: #e50914;
+  border-color: #e50914;
+
+  transform: translateY(-2px);
+}
+
+/* ==========================================
+   ACCOUNT BUTTON
+========================================== */
+
+.rb-nav-account,
+.rb-nav-more {
   position: relative;
 }
 
-.nav-profile-dropdown {
-  position: absolute;
-  display: none;
-  right: 0;
-  z-index: 1;
+.rb-nav-account-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  min-height: 43px;
+
+  padding: 10px 14px;
+
+  background: #f7f7f9;
+
+  color: #222222;
+
+  border: 1px solid #e9e9ed;
+  border-radius: 9px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
-.navbar-profile:hover .nav-profile-dropdown {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background-color: #fff2ef;
-  padding: 12px 25px;
-  border-radius: 4px;
-  border: 1px solid tomato;
-  outline: 2px solid white;
-  list-style: none;
+
+.rb-nav-account-btn:hover {
+  background: #fff1f1;
+  color: #e50914;
 }
-.nav-profile-dropdown li {
+
+/* ==========================================
+   NAVIGATION LINKS
+========================================== */
+
+.rb-nav-links {
+  width: 100%;
+
+  background: #ffffff;
+
+  border-top: 1px solid #f0f0f0;
+}
+
+.rb-nav-links-inner {
+  max-width: 1320px;
+
+  margin: 0 auto;
+  padding: 0 24px;
+
   display: flex;
   align-items: center;
-  gap: 10px;
+
+  gap: 35px;
+}
+
+.rb-nav-link {
+  position: relative;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  min-height: 49px;
+
+  padding: 13px 0;
+
+  background: transparent;
+
+  border: none;
+
+  color: #444444;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-decoration: none;
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition: color 0.2s ease;
+}
+
+.rb-nav-link:hover,
+.rb-nav-link.active {
+  color: #e50914;
+}
+
+.rb-nav-link::after {
+  content: "";
+
+  position: absolute;
+
+  bottom: 0;
+  left: 0;
+
+  width: 0;
+  height: 3px;
+
+  background: #e50914;
+
+  border-radius: 3px 3px 0 0;
+
+  transition: width 0.2s ease;
+}
+
+.rb-nav-link:hover::after,
+.rb-nav-link.active::after {
+  width: 100%;
+}
+
+/* ==========================================
+   DROPDOWN MENUS
+========================================== */
+
+.rb-nav-dropdown {
+  position: absolute;
+
+  top: calc(100% + 8px);
+  right: 0;
+
+  z-index: 1100;
+
+  min-width: 205px;
+
+  padding: 9px;
+
+  background: #ffffff;
+
+  border: 1px solid #eeeeee;
+  border-radius: 12px;
+
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.rb-nav-dropdown a,
+.rb-nav-dropdown button {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  width: 100%;
+
+  padding: 13px 14px;
+
+  background: transparent;
+
+  border: none;
+  border-radius: 8px;
+
+  color: #333333;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  text-align: left;
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.rb-nav-dropdown a:hover,
+.rb-nav-dropdown button:hover {
+  background: #fff0f1;
+
+  color: #e50914;
+}
+
+.rb-nav-dropdown-heading {
+  padding: 10px 14px;
+
+  color: #999999;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  border-bottom: 1px solid #f0f0f0;
+
+  margin-bottom: 5px;
+}
+
+.rb-nav-logout {
+  color: #e50914 !important;
+}
+
+.rb-nav-more-dropdown {
+  left: 0;
+  right: auto;
+}
+
+/* ==========================================
+   MOBILE MENU BUTTON
+========================================== */
+
+.rb-nav-mobile-toggle {
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 43px;
+  height: 43px;
+
+  padding: 0;
+
+  background: #f7f7f9;
+
+  color: #222222;
+
+  border: 1px solid #e7e7e7;
+  border-radius: 9px;
+
   cursor: pointer;
 }
-.nav-profile-dropdown img {
-    width: 20px;
+
+.rb-nav-mobile-toggle:hover {
+  color: #e50914;
+  border-color: #e50914;
 }
-.nav-profile-dropdown li:hover{
-    color: tomato;
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+.rb-nav a:focus-visible,
+.rb-nav button:focus-visible,
+.rb-nav input:focus-visible {
+  outline: 3px solid #e50914;
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 1100px) {
+  .rb-nav-main-inner {
+    gap: 20px;
+  }
+
+  .rb-nav-actions {
+    gap: 15px;
+  }
+
+  .rb-nav-brand-text span {
+    font-size: 13px;
+  }
+
+  .rb-nav-brand-text strong {
+    font-size: 15px;
+  }
+
+  .rb-nav-links-inner {
+    gap: 25px;
+  }
+}
+
+/* ==========================================
+   MOBILE NAVIGATION
+========================================== */
+
+@media (max-width: 900px) {
+  .rb-nav-main-inner {
+    flex-wrap: wrap;
+
+    gap: 15px;
+
+    padding: 14px 20px;
+  }
+
+  .rb-nav-brand {
+    order: 1;
+  }
+
+  .rb-nav-actions {
+    order: 2;
+
+    margin-left: auto;
+  }
+
+  .rb-nav-search {
+    order: 3;
+
+    flex: 0 0 100%;
+
+    max-width: 100%;
+  }
+
+  .rb-nav-mobile-toggle {
+    display: inline-flex;
+  }
+
+  /* COLLAPSIBLE LINKS */
+
+  .rb-nav-links {
+    display: none;
+  }
+
+  .rb-nav-links.is-open {
+    display: block;
+  }
+
+  .rb-nav-links-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 0;
+
+    padding: 10px 20px 18px;
+  }
+
+  .rb-nav-link {
+    justify-content: flex-start;
+
+    width: 100%;
+
+    min-height: 47px;
+
+    padding: 12px 5px;
+
+    border-bottom: 1px solid #f2f2f2;
+  }
+
+  .rb-nav-link::after {
+    display: none;
+  }
+
+  .rb-nav-more {
+    width: 100%;
+  }
+
+  .rb-nav-more-dropdown {
+    position: static;
+
+    width: 100%;
+
+    margin: 8px 0;
+
+    box-shadow: none;
+
+    border-radius: 8px;
+  }
+}
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 640px) {
+  .rb-nav-topbar {
+    display: none;
+  }
+
+  .rb-nav-main-inner {
+    padding: 12px 15px;
+
+    gap: 12px;
+  }
+
+  .rb-nav-brand-icon {
+    width: 40px;
+    height: 40px;
+
+    font-size: 14px;
+
+    border-radius: 10px;
+  }
+
+  .rb-nav-brand {
+    gap: 8px;
+  }
+
+  .rb-nav-brand-text span {
+    font-size: 11px;
+  }
+
+  .rb-nav-brand-text strong {
+    font-size: 13px;
+  }
+
+  .rb-nav-actions {
+    gap: 12px;
+  }
+
+  .rb-nav-action-text {
+    display: none;
+  }
+
+  .rb-nav-login-btn {
+    padding: 10px;
+
+    min-height: 40px;
+  }
+
+  .rb-nav-login-btn span {
+    display: none;
+  }
+
+  .rb-nav-account-btn {
+    padding: 9px;
+  }
+
+  .rb-nav-account-btn span {
+    display: none;
+  }
+
+  .rb-nav-search {
+    height: 43px;
+  }
+
+  .rb-nav-search button {
+    min-width: 45px;
+
+    padding: 0 13px;
+  }
+
+  .rb-nav-search button span {
+    display: none;
+  }
+
+  .rb-nav-search input {
+    font-size: 12px;
+
+    padding: 0 10px;
+  }
+
+  .rb-nav-search input::placeholder {
+    font-size: 11px;
+  }
+
+  .rb-nav-mobile-toggle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .rb-nav-links-inner {
+    padding: 10px 15px 18px;
+  }
+}
+
+/* ==========================================
+   VERY SMALL SCREENS
+========================================== */
+
+@media (max-width: 380px) {
+  .rb-nav-brand-text span {
+    font-size: 10px;
+  }
+
+  .rb-nav-brand-text strong {
+    font-size: 11px;
+  }
+
+  .rb-nav-brand-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .rb-nav-actions {
+    gap: 8px;
+  }
+}
+
+/* ==========================================
+   REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-nav *,
+  .rb-nav *::before,
+  .rb-nav *::after {
+    transition: none;
+  }
+}
+/* ==========================================
+   RIDWAN BUSINESS
+   OFFICIAL BLACK & GOLD LOGO
+========================================== */
+
+.rb-nav-brand-logo {
+  width: 58px;
+  height: 58px;
+
+  display: block;
+  flex-shrink: 0;
+
+  object-fit: contain;
+  object-position: center;
+
+  border-radius: 50%;
+
+  transition: transform 0.3s ease;
+}
+
+/* LOGO HOVER ANIMATION */
+
+.rb-nav-brand:hover .rb-nav-brand-logo {
+  transform: scale(1.05);
+}
+
+/* BUSINESS NAME */
+
+.rb-nav-brand-text {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+
+  line-height: 1.1;
+}
+
+.rb-nav-brand-text span {
+  color: #151515;
+  font-weight: 800;
+}
+
+.rb-nav-brand-text strong {
+  color: #e50914;
+  font-weight: 900;
+}
+
+/* ==========================================
+   TABLET LOGO
+========================================== */
+
+@media (max-width: 900px) {
+  .rb-nav-brand-logo {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* ==========================================
+   MOBILE LOGO
+========================================== */
+
+@media (max-width: 640px) {
+  .rb-nav-brand-logo {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* ==========================================
+   SMALL MOBILE DEVICES
+========================================== */
+
+@media (max-width: 380px) {
+  .rb-nav-brand-logo {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-nav-brand-logo {
+    transition: none;
+  }
+
+  .rb-nav-brand:hover .rb-nav-brand-logo {
+    transform: none;
+  }
 }

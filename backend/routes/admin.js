@@ -8,7 +8,6 @@ router.post("/login", (req, res) => {
   const { email, password } = req.body;
 
   console.log("Received credentials:", email, password);
-  console.log("Expected credentials:", process.env.ADMIN_EMAIL, process.env.ADMIN_PASSWORD);
 
   // Compare against .env values
   if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {

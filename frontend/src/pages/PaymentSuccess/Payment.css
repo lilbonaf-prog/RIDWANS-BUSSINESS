@@ -1,219 +1,935 @@
+/* ==========================================
+   RIDWAN BUSINESS
+   PREMIUM PAYMENT STATUS PAGE
+========================================== */
+
+
+/* ==========================================
+   MAIN PAYMENT CARD
+========================================== */
+
 .payment-success {
-  max-width: 700px;
-  margin: 3rem auto;
-  padding: 2rem;
+  --payment-red: #e50914;
+  --payment-red-dark: #c80712;
+  --payment-gold: #c9a34e;
+  --payment-dark: #171b25;
+  --payment-muted: #6b7280;
+  --payment-border: #e8eaf0;
+  --payment-green: #16a34a;
+
+  position: relative;
+
+  width: calc(100% - 32px);
+  max-width: 820px;
+
+  margin: 55px auto 90px;
+  padding: 42px 48px;
+
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
+
+  border: 1px solid var(--payment-border);
+  border-radius: 22px;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.04),
+    0 20px 55px rgba(0, 0, 0, 0.035);
+
+  color: var(--payment-dark);
+
+  font-family: "Segoe UI", Arial, sans-serif;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
 }
 
-.payment-success h2 {
-  text-align: center;
-  margin-bottom: 1rem;
-  color: #2c3e50;
+
+/* ==========================================
+   BOX SIZING
+========================================== */
+
+.payment-success *,
+.payment-success *::before,
+.payment-success *::after {
+  box-sizing: border-box;
 }
+
+
+/* ==========================================
+   BRAND ACCENT BORDER
+========================================== */
+
+.payment-success::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 5px;
+
+  background: linear-gradient(
+    90deg,
+    #e50914 0%,
+    #e50914 35%,
+    #c9a34e 65%,
+    #f4deb0 100%
+  );
+}
+
+
+/* ==========================================
+   PAGE TITLE
+========================================== */
+
+.payment-success > h2 {
+  margin: 0 0 20px;
+
+  color: var(--payment-dark);
+
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: 800;
+
+  letter-spacing: -0.8px;
+
+  line-height: 1.25;
+
+  text-align: center;
+}
+
+
+/* ==========================================
+   GENERAL PARAGRAPHS
+========================================== */
 
 .payment-success p {
-  font-size: 1rem;
-  margin: 0.5rem 0;
+  color: var(--payment-muted);
+
+  font-size: 13px;
+
+  line-height: 1.8;
 }
 
-.order-summary {
-  margin-top: 2rem;
-}
 
-.order-summary h3 {
-  margin-bottom: 1rem;
-  color: #27ae60;
-}
+/* ==========================================
+   PAYMENT VERIFICATION MESSAGE
+========================================== */
 
-.order-summary h4 {
-  margin-top: 1.5rem;
-  margin-bottom: 0.5rem;
-  color: #34495e;
-}
+.payment-success > p[role="status"] {
+  max-width: 600px;
 
-.order-summary ul {
-  list-style: none;
-  padding: 0;
-}
+  margin: 0 auto 28px;
 
-.order-summary li {
-  background: #f8f9fa;
-  margin: 0.3rem 0;
-  padding: 0.6rem;
-  border-radius: 6px;
-  border: 1px solid #e0e0e0;
-}
+  padding: 14px 20px;
 
-.order-summary strong {
-  color: #2c3e50;
-}
+  background: #f8fafc;
 
-.payment-success .status-success {
-  color: #27ae60;
-  font-weight: bold;
-}
+  border: 1px solid #e8edf4;
+  border-radius: 12px;
 
-.payment-success .status-failed {
-  color: #e74c3c;
-  font-weight: bold;
-}
+  color: #475569;
 
-.payment-success .status-error {
-  color: #f39c12;
-  font-weight: bold;
-}
-.delivery-info {
-  background: #f8f9fa;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-top: 1rem;
-  border: 1px solid #e0e0e0;
-}
+  font-size: 13px;
+  font-weight: 600;
 
-.back-home {
-  margin-top: 2rem;
+  line-height: 1.8;
+
   text-align: center;
 }
 
-.btn-home {
-  display: inline-block;
-  padding: 0.8rem 1.5rem;
-  background: #27ae60;
-  color: #fff;
-  font-weight: bold;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: background 0.3s ease;
+
+/* ==========================================
+   SUCCESS MESSAGE
+========================================== */
+
+.payment-success:has(.countdown-text)
+  > p[role="status"] {
+  background: #f0fdf4;
+
+  border-color: #bbf7d0;
+
+  color: #15803d;
 }
 
-.btn-home:hover {
-  background: #219150;
+
+/* ==========================================
+   ERROR / WARNING MESSAGE
+========================================== */
+
+.payment-success [role="alert"] {
+  padding: 15px 18px;
+
+  background: #fff7f7;
+
+  border: 1px solid #fecaca;
+  border-radius: 11px;
+
+  color: #b42318;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  line-height: 1.8;
+
+  overflow-wrap: anywhere;
 }
 
-.delivery-info strong {
-  color: #2c3e50;
-  margin-right: 0.5rem;
+
+/* ==========================================
+   ORDER SUMMARY CONTAINER
+========================================== */
+
+.payment-success .order-summary {
+  position: relative;
+
+  width: 100%;
+
+  margin-top: 18px;
+  padding: 30px;
+
+  background: #ffffff;
+
+  border: 1px solid var(--payment-border);
+  border-radius: 17px;
+
+  box-shadow: 0 5px 22px rgba(0, 0, 0, 0.035);
 }
 
-.back-home {
-  margin-top: 2rem;
-  text-align: center;
-}
 
-.btn-home {
-  display: inline-block;
-  padding: 0.8rem 1.5rem;
-  background: #27ae60;
-  color: #fff;
-  font-weight: bold;
-  border-radius: 6px;
-  text-decoration: none;
-  transition: background 0.3s ease;
-}
+/* ==========================================
+   SUCCESS CHECK ICON
+========================================== */
 
-.btn-home:hover {
-  background: #219150;
-}
-.actions {
+/*
+   This icon appears only when the
+   verified payment is successful.
+
+   The successful page contains the
+   automatic redirect countdown.
+*/
+
+.payment-success
+  .order-summary:has(.countdown-text)::before {
+  content: "✓";
+
   display: flex;
+
+  align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
-  flex-wrap: wrap;
+
+  width: 78px;
+  height: 78px;
+
+  margin: 0 auto 23px;
+
+  background: #eafbf0;
+
+  border: 2px solid #bbf7d0;
+  border-radius: 50%;
+
+  color: #16a34a;
+
+  font-size: 41px;
+  font-weight: 800;
+
+  line-height: 1;
+
+  box-shadow: 0 8px 23px rgba(22, 163, 74, 0.1);
+
+  animation: paymentSuccessPop 0.5s ease-out both;
 }
 
-/* ✅ Shared animation setup */
-.btn-orders,
-.btn-home {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeSlideUp 0.8s ease forwards;
-}
 
-/* ✅ Staggered entrance */
-.btn-home {
-  animation-delay: 0.2s; /* first button appears slightly earlier */
-}
+/* ==========================================
+   SUCCESS ICON ANIMATION
+========================================== */
 
-.btn-orders {
-  animation-delay: 0.6s; /* second button appears later */
-}
-
-.btn-orders {
-  display: inline-block;
-  padding: 0.8rem 1.5rem;
-  background: #3498db;        /* Blue background */
-  color: #fff;
-  font-weight: bold;
-  border-radius: 6px;
-  text-decoration: none;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-orders:hover {
-  background: #2980b9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-}
-
-.btn-orders:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-/* ✅ Responsive stacking on mobile */
-@media (max-width: 600px) {
-  .actions {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .btn-orders,
-  .btn-home {
-    width: 100%;
-    text-align: center;
-  }
-}
-
-/* ✨ Animation keyframes */
-@keyframes fadeSlideUp {
-  from {
+@keyframes paymentSuccessPop {
+  0% {
     opacity: 0;
-    transform: translateY(20px);
+    transform: scale(0.7);
   }
-  to {
+
+  75% {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1.08);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
-.countdown-text {
-  margin-top: 1rem;
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #27ae60;              /* ✅ Green for success */
+
+/* ==========================================
+   PAYMENT CONFIRMATION HEADING
+========================================== */
+
+.payment-success .order-summary h3 {
+  margin: 0 0 28px;
+
+  color: var(--payment-dark);
+
+  font-size: clamp(22px, 2.8vw, 29px);
+  font-weight: 800;
+
+  letter-spacing: -0.6px;
+
+  line-height: 1.3;
+
   text-align: center;
-  animation: fadeIn 0.8s ease; /* ✅ Smooth fade-in */
 }
 
-.countdown-text strong {
-  color: #2c3e50;              /* ✅ Darker highlight for the number */
+
+/* ==========================================
+   SUCCESSFUL PAYMENT HEADING
+========================================== */
+
+.payment-success
+  .order-summary:has(.countdown-text)
+  > h3 {
+  color: #15803d;
 }
 
-/* ✨ Fade-in animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+
+/* ==========================================
+   PAYMENT RECEIPT ROWS
+========================================== */
+
+.payment-success
+  .order-summary
+  > p:not(.countdown-text):not([role="alert"]) {
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  width: 100%;
+
+  margin: 0;
+  padding: 17px 0;
+
+  border-bottom: 1px solid #edf0f3;
+
+  color: var(--payment-dark);
+
+  font-size: 13px;
+  font-weight: 600;
+
+  line-height: 1.8;
+
+  overflow-wrap: anywhere;
+}
+
+
+/* ==========================================
+   RECEIPT LABELS
+========================================== */
+
+.payment-success
+  .order-summary
+  > p:not(.countdown-text)
+  > strong {
+  flex-shrink: 0;
+
+  color: #737b89;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* ==========================================
+   RECEIPT REFERENCE
+========================================== */
+
+.payment-success .order-summary > p {
+  word-break: break-word;
+}
+
+
+/* ==========================================
+   PAYMENT AMOUNT
+========================================== */
+
+.payment-success
+  .order-summary
+  > p:has(> strong:first-child) {
+  min-height: 48px;
+}
+
+
+/* ==========================================
+   SUCCESSFUL PAYMENT AMOUNT
+========================================== */
+
+.payment-success
+  .order-summary:has(.countdown-text)
+  > p:has(strong):nth-of-type(4) {
+  color: var(--payment-red);
+
+  font-size: 18px;
+  font-weight: 900;
+}
+
+
+/* ==========================================
+   ORDER DETAILS SECTION TITLES
+========================================== */
+
+.payment-success .order-summary h4 {
+  margin: 28px 0 15px;
+
+  padding-left: 12px;
+
+  border-left: 3px solid var(--payment-gold);
+
+  color: var(--payment-dark);
+
+  font-size: 16px;
+  font-weight: 800;
+
+  line-height: 1.5;
+}
+
+
+/* ==========================================
+   ORDERED PRODUCTS LIST
+========================================== */
+
+.payment-success .order-summary ul {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+}
+
+
+/* ==========================================
+   ORDERED PRODUCT ITEM
+========================================== */
+
+.payment-success .order-summary li {
+  padding: 14px 16px;
+
+  background: #f8f9fb;
+
+  border: 1px solid #edf0f4;
+  border-radius: 10px;
+
+  color: var(--payment-dark);
+
+  font-size: 13px;
+  font-weight: 600;
+
+  line-height: 1.8;
+}
+
+
+/* ==========================================
+   DELIVERY INFORMATION
+========================================== */
+
+.payment-success .delivery-info {
+  margin-top: 12px;
+  padding: 20px;
+
+  background: #fafbfc;
+
+  border: 1px solid #edf0f3;
+  border-radius: 12px;
+}
+
+
+/* ==========================================
+   DELIVERY INFORMATION ROWS
+========================================== */
+
+.payment-success .delivery-info p {
+  margin: 0 0 12px;
+
+  color: #596171;
+
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.payment-success .delivery-info p:last-child {
+  margin-bottom: 0;
+}
+
+
+/* ==========================================
+   DELIVERY INFORMATION LABELS
+========================================== */
+
+.payment-success .delivery-info strong {
+  color: var(--payment-dark);
+
+  font-weight: 800;
+
+  margin-right: 6px;
+}
+
+
+/* ==========================================
+   AUTOMATIC REDIRECT COUNTDOWN
+========================================== */
+
+.payment-success .countdown-text {
+  margin: 25px 0 5px;
+  padding: 16px 18px;
+
+  background: #f0fdf4;
+
+  border: 1px solid #d1fae5;
+  border-radius: 11px;
+
+  color: #15803d;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  line-height: 1.8;
+
+  text-align: center;
+}
+
+
+/* ==========================================
+   COUNTDOWN NUMBER
+========================================== */
+
+.payment-success .countdown-text strong {
+  color: #166534;
+
+  font-size: 16px;
+  font-weight: 900;
+}
+
+
+/* ==========================================
+   ACTION BUTTONS CONTAINER
+========================================== */
+
+.payment-success .actions {
+  display: flex;
+
+  align-items: stretch;
+  justify-content: center;
+
+  gap: 14px;
+
+  width: 100%;
+
+  margin-top: 30px;
+}
+
+
+/* ==========================================
+   SHARED ACTION BUTTON STYLES
+========================================== */
+
+.payment-success .btn-orders,
+.payment-success .btn-home {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex: 1;
+
+  min-height: 50px;
+
+  margin: 0;
+  padding: 14px 20px;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+
+  line-height: 1.5;
+
+  text-align: center;
+  text-decoration: none;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+/* ==========================================
+   MY ORDERS BUTTON
+========================================== */
+
+.payment-success .btn-orders {
+  background: var(--payment-red);
+
+  border-color: var(--payment-red);
+
+  color: #ffffff;
+}
+
+
+/* ==========================================
+   MY ORDERS BUTTON HOVER
+========================================== */
+
+.payment-success .btn-orders:hover {
+  background: var(--payment-red-dark);
+
+  border-color: var(--payment-red-dark);
+
+  color: #ffffff;
+
+  box-shadow: 0 8px 22px rgba(229, 9, 20, 0.18);
+
+  transform: translateY(-2px);
+}
+
+
+/* ==========================================
+   CONTINUE SHOPPING BUTTON
+========================================== */
+
+.payment-success .btn-home {
+  background: #171b25;
+
+  border-color: #171b25;
+
+  color: #ffffff;
+}
+
+
+/* ==========================================
+   CONTINUE SHOPPING HOVER
+========================================== */
+
+.payment-success .btn-home:hover {
+  background: #2b3241;
+
+  border-color: #2b3241;
+
+  color: #ffffff;
+
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.13);
+
+  transform: translateY(-2px);
+}
+
+
+/* ==========================================
+   BUTTON ACTIVE STATE
+========================================== */
+
+.payment-success .btn-orders:active,
+.payment-success .btn-home:active {
+  transform: translateY(0);
+}
+
+
+/* ==========================================
+   KEYBOARD ACCESSIBILITY
+========================================== */
+
+.payment-success button:focus-visible,
+.payment-success a:focus-visible {
+  outline: 3px solid rgba(229, 9, 20, 0.5);
+
+  outline-offset: 3px;
+}
+
+
+/* ==========================================
+   PAYMENT PENDING / INCOMPLETE
+========================================== */
+
+.payment-success
+  .order-summary:not(:has(.countdown-text)) {
+  background: #ffffff;
+}
+
+.payment-success
+  .order-summary:not(:has(.countdown-text))
+  > h3 {
+  color: var(--payment-dark);
+}
+
+
+/* ==========================================
+   PENDING PAYMENT INFORMATION
+========================================== */
+
+.payment-success
+  .order-summary:not(:has(.countdown-text))
+  > p {
+  color: #596171;
+}
+
+
+/* ==========================================
+   PAYMENT ERROR DISPLAY
+========================================== */
+
+.payment-success > p[role="alert"] {
+  margin: 20px 0;
+
+  padding: 17px 20px;
+
+  background: #fff3f3;
+
+  border: 1px solid #fecaca;
+  border-radius: 11px;
+
+  color: #b42318;
+
+  font-weight: 600;
+
+  text-align: center;
+}
+
+
+/* ==========================================
+   CLEAN DIVIDERS
+========================================== */
+
+.payment-success hr {
+  border: none;
+
+  border-top: 1px solid #edf0f3;
+
+  margin: 22px 0;
+}
+
+
+/* ==========================================
+   LARGE SCREEN RESPONSIVENESS
+========================================== */
+
+@media (min-width: 1200px) {
+  .payment-success {
+    margin-top: 70px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+}
+
+
+/* ==========================================
+   TABLET RESPONSIVENESS
+========================================== */
+
+@media (max-width: 768px) {
+  .payment-success {
+    max-width: 680px;
+
+    margin: 35px auto 65px;
+    padding: 32px 28px;
+
+    border-radius: 17px;
+  }
+
+  .payment-success .order-summary {
+    padding: 25px 22px;
+  }
+
+  .payment-success > h2 {
+    font-size: 29px;
+  }
+
+  .payment-success .order-summary h3 {
+    font-size: 24px;
+  }
+}
+
+
+/* ==========================================
+   MOBILE RESPONSIVENESS
+========================================== */
+
+@media (max-width: 600px) {
+  .payment-success {
+    width: calc(100% - 24px);
+
+    margin: 25px auto 50px;
+
+    padding: 25px 16px;
+
+    border-radius: 15px;
+  }
+
+  /* PAGE HEADING */
+
+  .payment-success > h2 {
+    font-size: 25px;
+
+    margin-bottom: 18px;
+  }
+
+  /* STATUS MESSAGE */
+
+  .payment-success > p[role="status"] {
+    padding: 13px;
+
+    font-size: 12px;
+
+    margin-bottom: 22px;
+  }
+
+  /* PAYMENT CARD */
+
+  .payment-success .order-summary {
+    padding: 23px 16px;
+
+    border-radius: 13px;
+  }
+
+  /* SUCCESS ICON */
+
+  .payment-success
+    .order-summary:has(.countdown-text)::before {
+    width: 66px;
+    height: 66px;
+
+    font-size: 35px;
+  }
+
+  /* SUCCESS HEADING */
+
+  .payment-success .order-summary h3 {
+    font-size: 22px;
+
+    margin-bottom: 23px;
+  }
+
+  /* RECEIPT ROWS */
+
+  .payment-success
+    .order-summary
+    > p:not(.countdown-text):not([role="alert"]) {
+    flex-direction: column;
+
+    gap: 5px;
+
+    padding: 14px 0;
+
+    font-size: 12px;
+  }
+
+  /* RECEIPT LABELS */
+
+  .payment-success
+    .order-summary
+    > p:not(.countdown-text)
+    > strong {
+    font-size: 11px;
+  }
+
+  /* AMOUNT */
+
+  .payment-success
+    .order-summary:has(.countdown-text)
+    > p:has(strong):nth-of-type(4) {
+    font-size: 20px;
+  }
+
+  /* ORDER DETAILS */
+
+  .payment-success .order-summary h4 {
+    font-size: 15px;
+  }
+
+  .payment-success .order-summary li {
+    font-size: 12px;
+
+    padding: 12px;
+  }
+
+  /* COUNTDOWN */
+
+  .payment-success .countdown-text {
+    padding: 13px;
+
+    font-size: 12px;
+  }
+
+  /* ACTION BUTTONS */
+
+  .payment-success .actions {
+    flex-direction: column;
+
+    gap: 12px;
+
+    margin-top: 25px;
+  }
+
+  .payment-success .btn-orders,
+  .payment-success .btn-home {
+    width: 100%;
+
+    flex: none;
+
+    min-height: 49px;
+
+    font-size: 12px;
+  }
+}
+
+
+/* ==========================================
+   VERY SMALL MOBILE DEVICES
+========================================== */
+
+@media (max-width: 380px) {
+  .payment-success {
+    padding: 20px 12px;
+  }
+
+  .payment-success .order-summary {
+    padding: 20px 12px;
+  }
+
+  .payment-success > h2 {
+    font-size: 22px;
+  }
+
+  .payment-success .order-summary h3 {
+    font-size: 20px;
+  }
+}
+
+
+/* ==========================================
+   REDUCED MOTION
+========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .payment-success *,
+  .payment-success *::before,
+  .payment-success *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .payment-success .btn-orders:hover,
+  .payment-success .btn-home:hover {
+    transform: none;
   }
 }

@@ -1,0 +1,168 @@
+/* RIDWAN BUSINESS - PROMOTIONAL CAROUSEL */
+
+.rb-carousel-section {
+  width: 100%;
+  padding: 30px 0;
+  background: #ffffff;
+}
+
+.rb-carousel-heading {
+  text-align: center;
+  margin-bottom: 35px;
+  padding: 0 15px;
+}
+
+.rb-carousel-label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #e50914;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.rb-carousel-heading h2 {
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 800;
+  color: #171717;
+  margin-bottom: 12px;
+}
+
+.rb-carousel-heading p {
+  font-size: 15px;
+  color: #777;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.rb-carousel-wrapper {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #101522;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.rb-promo-carousel {
+  width: 100%;
+  background: #101522;
+}
+
+.rb-promo-carousel .carousel-item {
+  width: 100%;
+  background: #101522;
+}
+
+.rb-carousel-media {
+  display: block;
+  width: 100%;
+  height: clamp(260px, 40vw, 520px);
+  object-fit: contain;
+  object-position: center;
+  background: #101522;
+}
+
+/* CAROUSEL ARROWS */
+
+.rb-promo-carousel .carousel-control-prev,
+.rb-promo-carousel .carousel-control-next {
+  width: 8%;
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
+}
+
+.rb-promo-carousel .carousel-control-prev:hover,
+.rb-promo-carousel .carousel-control-next:hover {
+  opacity: 1;
+}
+
+/* CAROUSEL INDICATORS */
+
+.rb-promo-carousel .carousel-indicators {
+  margin-bottom: 16px;
+}
+
+.rb-promo-carousel .carousel-indicators button {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin: 0 5px;
+  border: none;
+  background: #ffffff;
+  opacity: 0.5;
+}
+
+.rb-promo-carousel .carousel-indicators .active {
+  background: #e50914;
+  opacity: 1;
+}
+
+/* TABLET */
+
+@media (max-width: 992px) {
+  .rb-carousel-section {
+    padding: 20px 0;
+  }
+
+  .rb-carousel-wrapper {
+    border-radius: 14px;
+  }
+
+  .rb-carousel-media {
+    height: 400px;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+  .rb-carousel-heading {
+    margin-bottom: 25px;
+  }
+
+  .rb-carousel-heading h2 {
+    font-size: 27px;
+  }
+
+  .rb-carousel-heading p {
+    font-size: 14px;
+  }
+
+  .rb-carousel-wrapper {
+    border-radius: 10px;
+  }
+
+  .rb-carousel-media {
+    height: 280px;
+  }
+
+  .rb-promo-carousel .carousel-control-prev,
+  .rb-promo-carousel .carousel-control-next {
+    width: 12%;
+  }
+}
+
+/* SMALL PHONES */
+
+@media (max-width: 480px) {
+  .rb-carousel-media {
+    height: 220px;
+  }
+
+  .rb-carousel-heading h2 {
+    font-size: 24px;
+  }
+
+  .rb-carousel-label {
+    font-size: 10px;
+  }
+}
+
+/* REDUCED MOTION */
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-promo-carousel .carousel-item {
+    transition: none;
+  }
+}

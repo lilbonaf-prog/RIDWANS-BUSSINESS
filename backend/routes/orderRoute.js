@@ -1,165 +1,625 @@
 import express from "express";
-import axios from "axios";
 import crypto from "crypto";
+import mongoose from "mongoose";
 
 import orderModel from "../models/orderModel.js";
-import cartModel from "../models/cartModel.js";
+
 import authMiddleware from "../middleware/auth.js";
 import adminAuth from "../middleware/adminAuth.js";
 
 import {
+  placeOrder,
   verifyOrder,
+  confirmPaystackPayment,
   userOrders,
   listOrders,
-  updateStatus
+  updateStatus,
 } from "../controllers/orderController.js";
+
+// ==========================================
+// RIDWAN BUSINESS
+// SECURE ORDER & PAYMENT ROUTES
+// ==========================================
 
 const router = express.Router();
 
-// Update order status (Admin)
-router.post("/status", adminAuth, updateStatus);
+// ==========================================
+// 1. ADMIN: UPDATE ORDER STATUS
+// ==========================================
 
-// List all orders (Admin)
-router.get("/list", adminAuth, listOrders);
+router.post(
+  "/status",
+  adminAuth,
+  updateStatus
+);
 
-// Get logged in user orders
-router.post("/userorders", authMiddleware, userOrders);
+// ==========================================
+// 2. ADMIN: LIST ALL ORDERS
+// ==========================================
 
-// ✅ Paystack webhook
-router.post("/webhook", express.json(), async (req, res) => {
+router.get(
+  "/list",
+  adminAuth,
+  listOrders
+);
+
+// ==========================================
+// 3. CUSTOMER: VIEW OWN ORDERS
+// ==========================================
+
+router.post(
+  "/userorders",
+  authMiddleware,
+  userOrders
+);
+
+// ==========================================
+// 4. PAYSTACK WEBHOOK
+// ==========================================
+
+// Paystack sends payment notifications here.
+//
+// This endpoint cannot require a customer
+// JWT because Paystack calls it directly.
+//
+// Security is provided by validating
+// Paystack's HMAC-SHA512 signature.
+
+router.post("/webhook", async (req, res) => {
   try {
-    const hash = crypto
-      .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY)
-      .update(JSON.stringify(req.body))
-      .digest("hex");
+    const secretKey =
+      process.env.PAYSTACK_SECRET_KEY;
 
-    if (hash === req.headers["x-paystack-signature"]) {
-      const event = req.body;
+    // ======================================
+    // CHECK PAYSTACK CONFIGURATION
+    // ======================================
 
-      if (event.event === "charge.success") {
-        const reference = event.data.reference;
+    if (!secretKey) {
+      console.error(
+        "PAYSTACK_SECRET_KEY is missing."
+      );
 
-        await orderModel.findOneAndUpdate(
-          { reference },
-          { status: "Paid", payment: true },
-          { new: true }
-        );
-
-        console.log("Webhook payment verified:", reference);
-      }
+      return res.sendStatus(503);
     }
 
-    res.sendStatus(200);
-  } catch (error) {
-    console.error("Webhook error:", error.message);
-    res.sendStatus(500);
-  }
-});
+    // ======================================
+    // CHECK ORIGINAL WEBHOOK BODY
+    // ======================================
 
-// ✅ Place order
-router.post("/place", authMiddleware, async (req, res) => {
-  const { email, items, address, paymentMethod } = req.body;
-  const userId = req.user.id;
+    // server.js captures the original
+    // request body as req.rawBody.
 
-  try {
-    // Calculate total
-    const totalAmount = items.reduce(
-      (sum, item) => sum + Number(item.price) * Number(item.quantity),
-      0
+    if (!Buffer.isBuffer(req.rawBody)) {
+      console.error(
+        "Paystack webhook raw body is missing."
+      );
+
+      return res.sendStatus(400);
+    }
+
+    // ======================================
+    // VALIDATE RECEIVED SIGNATURE
+    // ======================================
+
+    const receivedSignature =
+      req.headers["x-paystack-signature"];
+
+    if (
+      typeof receivedSignature !== "string" ||
+      !/^[a-f0-9]{128}$/i.test(
+        receivedSignature
+      )
+    ) {
+      return res.sendStatus(401);
+    }
+
+    // ======================================
+    // GENERATE EXPECTED SIGNATURE
+    // ======================================
+
+    const expectedSignature = crypto
+      .createHmac("sha512", secretKey)
+      .update(req.rawBody)
+      .digest();
+
+    const providedSignature = Buffer.from(
+      receivedSignature,
+      "hex"
     );
 
-    let reference = null;
-    let authorization_url = null;
+    // ======================================
+    // CONSTANT-TIME SIGNATURE CHECK
+    // ======================================
 
-    if (paymentMethod === "Online") {
-      try {
-        const payload = {
-          email,
-          amount: totalAmount * 100, // Paystack expects amount in kobo/pesewas
-          currency: "GHS",
-          callback_url: process.env.PAYSTACK_CALLBACK_URL,
-        };
+    if (
+      expectedSignature.length !==
+        providedSignature.length ||
+      !crypto.timingSafeEqual(
+        expectedSignature,
+        providedSignature
+      )
+    ) {
+      console.warn(
+        "Rejected invalid Paystack webhook signature."
+      );
 
-        const response = await axios.post(
-          "https://api.paystack.co/transaction/initialize",
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        reference = response.data.data.reference;
-        authorization_url = response.data.data.authorization_url;
-      } catch (paystackError) {
-        console.error("Paystack init error:", paystackError.response?.data || paystackError.message);
-        return res.status(500).json({
-          success: false,
-          message: "Payment initialization failed",
-        });
-      }
+      return res.sendStatus(401);
     }
 
-    // Save order
-    const newOrder = new orderModel({
-      userId,
-      items,
-      amount: totalAmount,
-      address,
-      status: paymentMethod === "CashOnDelivery" ? "Pending Delivery" : "Pending",
-      payment: false,
+    // ======================================
+    // READ VERIFIED WEBHOOK EVENT
+    // ======================================
+
+    const event = req.body;
+
+    // Only process successful charges.
+
+    if (event?.event !== "charge.success") {
+      return res.sendStatus(200);
+    }
+
+    const reference =
+      event?.data?.reference;
+
+    // ======================================
+    // VALIDATE PAYMENT REFERENCE
+    // ======================================
+
+    if (
+      typeof reference !== "string" ||
+      !/^[A-Za-z0-9._=-]{1,150}$/.test(
+        reference
+      )
+    ) {
+      console.error(
+        "Paystack webhook contains an invalid reference."
+      );
+
+      return res.sendStatus(400);
+    }
+
+    // ======================================
+    // VERIFY PAYMENT DIRECTLY
+    // ======================================
+
+    // The controller verifies:
+    //
+    // - Transaction reference
+    // - Paystack payment status
+    // - Amount paid
+    // - Currency (GHS)
+    // - Duplicate payment processing
+    //
+    // Only the controller marks orders paid.
+
+    const result =
+      await confirmPaystackPayment(reference);
+
+    // ======================================
+    // SUCCESSFUL VERIFICATION
+    // ======================================
+
+    if (result.success) {
+      console.log(
+        "Paystack payment confirmed:",
+        reference
+      );
+
+      return res.sendStatus(200);
+    }
+
+    // ======================================
+    // TERMINAL VALIDATION FAILURES
+    // ======================================
+
+    if (
+      result.httpStatus === 400 ||
+      result.httpStatus === 404 ||
+      result.httpStatus === 409
+    ) {
+      console.error(
+        "Paystack payment requires investigation:",
+        reference,
+        result.message
+      );
+
+      // Do not mark the order as paid.
+      //
+      // Acknowledge these validation failures
+      // to avoid repeated delivery of the
+      // same invalid notification.
+
+      return res.sendStatus(200);
+    }
+
+    // ======================================
+    // TEMPORARY VERIFICATION FAILURE
+    // ======================================
+
+    console.error(
+      "Paystack verification incomplete:",
       reference,
-      paymentMethod,
-    });
+      result.message
+    );
 
-    await newOrder.save();
+    // Allow Paystack to retry.
 
-    // Clear cart
-    await cartModel.updateMany({ userId }, { items: [] });
+    return res.sendStatus(503);
 
-    // ✅ Separate responses
-    if (paymentMethod === "CashOnDelivery") {
-      return res.json({
-        success: true,
-        message: "Order placed successfully with Cash on Delivery",
-      });
-    } else {
-      return res.json({
-        success: true,
-        authorization_url,
+  } catch (error) {
+    console.error(
+      "Paystack webhook processing error:",
+      error.response?.data ||
+        error.message
+    );
+
+    return res.sendStatus(500);
+  }
+});
+
+// ==========================================
+// 5. CUSTOMER: PLACE ORDER
+// ==========================================
+
+// Customers must be authenticated.
+//
+// The controller independently calculates
+// order totals using MongoDB product prices.
+
+router.post(
+  "/place",
+  authMiddleware,
+  placeOrder
+);
+
+// ==========================================
+// 6. PAYMENT REFERENCE VALIDATION
+// ==========================================
+
+const isValidPaymentReference = (reference) => {
+  return (
+    typeof reference === "string" &&
+    /^[A-Za-z0-9._=-]{1,150}$/.test(
+      reference
+    )
+  );
+};
+
+// ==========================================
+// 7. PAYSTACK BROWSER CALLBACK
+// ==========================================
+
+// Paystack can redirect a customer's browser
+// to /api/order/verify?reference=...
+//
+// The browser may not send a JWT during
+// this navigation.
+//
+// IMPORTANT:
+//
+// This handler ONLY redirects the browser.
+//
+// It does NOT:
+// - Verify a transaction
+// - Modify an order
+// - Mark an order as paid
+// - Return private customer information
+//
+// The frontend PaymentSuccess.jsx performs
+// authenticated verification afterward.
+
+const redirectBrowserCallback = (
+  req,
+  res,
+  next
+) => {
+  const acceptsHTML =
+    String(req.headers.accept || "")
+      .includes("text/html");
+
+  // API requests continue to authentication.
+
+  if (!acceptsHTML) {
+    return next();
+  }
+
+  const reference =
+    req.query?.reference ||
+    req.query?.trxref;
+
+  // ========================================
+  // VALIDATE CALLBACK REFERENCE
+  // ========================================
+
+  if (!isValidPaymentReference(reference)) {
+    return res.status(400).send(
+      "Invalid payment reference."
+    );
+  }
+
+  // ========================================
+  // CHECK FRONTEND CONFIGURATION
+  // ========================================
+
+  const frontendURL =
+    process.env.FRONTEND_URL;
+
+  if (!frontendURL) {
+    console.error(
+      "FRONTEND_URL is missing."
+    );
+
+    return res.status(503).send(
+      "Payment redirect is not configured."
+    );
+  }
+
+  // ========================================
+  // REDIRECT TO PAYMENT STATUS PAGE
+  // ========================================
+
+  try {
+    const redirectURL = new URL(
+      "/payment-success",
+      frontendURL
+    );
+
+    redirectURL.searchParams.set(
+      "reference",
+      reference
+    );
+
+    // Never report payment success here.
+    //
+    // The frontend must verify the payment
+    // through the authenticated API.
+
+    return res.redirect(
+      302,
+      redirectURL.toString()
+    );
+
+  } catch (error) {
+    console.error(
+      "Payment callback redirect error:",
+      error.message
+    );
+
+    return res.status(503).send(
+      "Payment redirect is temporarily unavailable."
+    );
+  }
+};
+
+// ==========================================
+// 8. VERIFY CUSTOMER ORDER OWNERSHIP
+// ==========================================
+
+// This middleware runs AFTER authMiddleware.
+//
+// It prevents customers from accessing or
+// verifying orders belonging to other users.
+
+const verifyCustomerOrderOwnership = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const reference =
+      req.query?.reference ||
+      req.body?.reference;
+
+    // ======================================
+    // VALIDATE PAYMENT REFERENCE
+    // ======================================
+
+    if (!isValidPaymentReference(reference)) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid payment reference.",
       });
     }
+
+    // ======================================
+    // CHECK AUTHENTICATED CUSTOMER
+    // ======================================
+
+    const userId =
+      req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message:
+          "Authentication is required.",
+      });
+    }
+
+    // ======================================
+    // CHECK ORDER OWNERSHIP
+    // ======================================
+
+    const order = await orderModel
+      .findOne({
+        reference,
+        userId,
+        paymentMethod: "Online",
+      })
+      .select("_id")
+      .lean();
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message:
+          "Payment order not found.",
+      });
+    }
+
+    // ======================================
+    // CONTINUE TO PAYMENT VERIFICATION
+    // ======================================
+
+    return next();
+
   } catch (error) {
-    console.error("Place order error:", error.message);
+    console.error(
+      "Payment access verification error:",
+      error.message
+    );
+
     return res.status(500).json({
       success: false,
-      message: "Failed to place order",
+      message:
+        "Unable to verify payment access.",
     });
   }
-});
+};
 
-// Verify payment
-router.all("/verify", verifyOrder);
+// ==========================================
+// 9. VERIFY PAYSTACK PAYMENT (GET)
+// ==========================================
 
-// Delete order
-router.delete("/delete/:id", async (req, res) => {
-  try {
-    const orderId = req.params.id;
-    await orderModel.findByIdAndDelete(orderId);
+// Browser navigation:
+// Redirect to the frontend only.
+//
+// API request:
+// Require JWT and order ownership.
 
-    res.json({
-      success: true,
-      message: "Order deleted successfully",
-    });
-  } catch (error) {
-    console.error("Delete order error:", error.message);
-    res.status(500).json({
-      success: false,
-      message: "Failed to delete order",
-    });
+router.get(
+  "/verify",
+  redirectBrowserCallback,
+  authMiddleware,
+  verifyCustomerOrderOwnership,
+  verifyOrder
+);
+
+// ==========================================
+// 10. VERIFY PAYSTACK PAYMENT (POST)
+// ==========================================
+
+// POST verification is always authenticated.
+
+router.post(
+  "/verify",
+  authMiddleware,
+  verifyCustomerOrderOwnership,
+  verifyOrder
+);
+
+// ==========================================
+// 11. ADMIN: DELETE ORDER
+// ==========================================
+
+// Administrators may delete unpaid
+// Cash on Delivery orders only.
+//
+// Paid orders and all Online orders
+// are protected against permanent deletion.
+
+router.delete(
+  "/delete/:id",
+  adminAuth,
+  async (req, res) => {
+    try {
+      const orderId = req.params.id;
+
+      // ====================================
+      // VALIDATE ORDER ID
+      // ====================================
+
+      if (!mongoose.isValidObjectId(orderId)) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Invalid order ID.",
+        });
+      }
+
+      // ====================================
+      // GET ORDER
+      // ====================================
+
+      const order =
+        await orderModel.findById(orderId);
+
+      if (!order) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Order not found.",
+        });
+      }
+
+      // ====================================
+      // PROTECT PAYMENT RECORDS
+      // ====================================
+
+      // Never permanently delete:
+      //
+      // 1. Confirmed paid orders
+      // 2. Pending online-payment orders
+      // 3. Failed online-payment orders
+      //
+      // A pending payment may complete
+      // after the administrator checks it.
+
+      if (
+        order.payment === true ||
+        order.paymentMethod === "Online"
+      ) {
+        return res.status(409).json({
+          success: false,
+          message:
+            "Paid and online-payment orders cannot be permanently deleted.",
+        });
+      }
+
+      // ====================================
+      // DELETE UNPAID COD ORDER
+      // ====================================
+
+      // Restrict deletion to unpaid
+      // Cash on Delivery records.
+
+      if (
+        order.paymentMethod !==
+        "CashOnDelivery"
+      ) {
+        return res.status(409).json({
+          success: false,
+          message:
+            "This order cannot be deleted.",
+        });
+      }
+
+      await order.deleteOne();
+
+      return res.json({
+        success: true,
+        message:
+          "Order deleted successfully.",
+      });
+
+    } catch (error) {
+      console.error(
+        "Delete order error:",
+        error.message
+      );
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Unable to delete order.",
+      });
+    }
   }
-});
+);
+
+// ==========================================
+// EXPORT ORDER ROUTER
+// ==========================================
 
 export default router;

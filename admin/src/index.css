@@ -1,29 +1,227 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+/* ==========================================
+   RIDWAN BUSINESS
+   PREMIUM ADMIN DASHBOARD
+   GLOBAL STYLES
+========================================== */
 
-*{
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    font-family: Outfit;
+/* Google Fonts */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap");
+
+/* ==========================================
+   DESIGN VARIABLES
+========================================== */
+
+:root {
+  --admin-primary: #e53935;
+  --admin-primary-dark: #c62828;
+
+  --admin-gold: #d9af62;
+
+  --admin-dark: #111318;
+  --admin-text: #20242c;
+  --admin-muted: #838895;
+
+  --admin-background: #f5f6fa;
+  --admin-white: #ffffff;
+
+  --admin-border: #e8eaf0;
+
+  --admin-shadow: 0 4px 24px rgba(17, 19, 24, 0.05);
+
+  --admin-radius: 14px;
+
+  font-family: "Outfit", sans-serif;
+  color: var(--admin-text);
+  background: var(--admin-background);
 }
-body{
-    min-height: 100vh;
-    background-color: #fcfcfc;
+
+/* ==========================================
+   GLOBAL RESET
+========================================== */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-a{
-    text-decoration: none;
-    color: inherit;
+
+html {
+  width: 100%;
+  min-height: 100%;
+  scroll-behavior: smooth;
 }
-hr{
-    border: none;
-    height: 1px;
-    background-color: #a9a9a9;
+
+body {
+  width: 100%;
+  min-height: 100vh;
+
+  background: var(--admin-background);
+
+  color: var(--admin-text);
+
+  font-family: "Outfit", sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+/* ==========================================
+   ROOT APPLICATION
+========================================== */
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ==========================================
+   GLOBAL ELEMENTS
+========================================== */
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  max-width: 100%;
+}
+
+hr {
+  border: none;
+  height: 1px;
+
+  background: var(--admin-border);
+}
+
+/* Navbar already has a bottom border */
+
+.navbar + hr {
+  display: none;
+}
+
+/* ==========================================
+   MAIN ADMIN LAYOUT
+========================================== */
+
 .app-content {
-    display: flex;
+  display: flex;
+
+  align-items: stretch;
+
+  width: 100%;
+  min-height: calc(100vh - 75px);
+
+  background: var(--admin-background);
 }
+
+/* ==========================================
+   MAIN PAGE AREA
+========================================== */
+
+/*
+   The sidebar occupies the left side.
+
+   Each React Router page uses the
+   remaining available horizontal space.
+
+   Existing page components retain
+   their own internal styling.
+*/
+
+.app-content > :not(.sidebar) {
+  flex: 1 1 auto;
+
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* ==========================================
+   REUSABLE FLEX UTILITIES
+========================================== */
+
 .flex-col {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+:focus-visible {
+  outline: 2px solid var(--admin-primary);
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   SCROLLBAR
+========================================== */
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #eef0f4;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c5c9d2;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9da3af;
+}
+
+/* ==========================================
+   TABLET RESPONSIVENESS
+========================================== */
+
+@media (max-width: 1050px) {
+  .app-content {
+    width: 100%;
+  }
+}
+
+/* ==========================================
+   MOBILE RESPONSIVENESS
+========================================== */
+
+@media (max-width: 700px) {
+  .app-content {
+    min-height: calc(100vh - 68px);
+  }
+}
+
+/* ==========================================
+   SMALL MOBILE DEVICES
+========================================== */
+
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  .app-content {
+    width: 100%;
+  }
 }

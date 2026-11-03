@@ -16,7 +16,14 @@ import "./Orders.css";
 // PREMIUM ORDER MANAGEMENT PAGE
 // ==========================================
 
-const ORDER_STATUSES = [
+// These are the delivery stages supported
+// by our existing order-status API.
+//
+// "Paid" is an existing order status returned
+// by the backend. We display and count it,
+// but do not offer it as a new status action.
+
+const DELIVERY_STATUSES = [
   "Product Processing",
   "Out for delivery",
   "Delivered",
@@ -141,17 +148,15 @@ const Icon = ({ name, size = 20 }) => {
 };
 
 // ==========================================
-// PRICE FORMATTER
+// GHANA CEDI PRICE FORMATTER
 // ==========================================
 
 const formatPrice = (amount) => {
   const value = Number(amount);
 
-  if (!Number.isFinite(value)) {
-    return "GH₵0.00";
-  }
-
-  return `GH₵${value.toLocaleString("en-GH", {
+  return `GH₵${(
+    Number.isFinite(value) ? value : 0
+  ).toLocaleString("en-GH", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
@@ -166,15 +171,13 @@ const formatDate = (value) => {
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  return date.toLocaleDateString("en-GH", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  return Number.isNaN(date.getTime())
+    ? ""
+    : date.toLocaleDateString("en-GH", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
 };
 
 // ==========================================
@@ -194,7 +197,7 @@ const formatPaymentMethod = (method) => {
 };
 
 // ==========================================
-// STATUS CSS CLASS
+// ORDER STATUS COLORS
 // ==========================================
 
 const getStatusClass = (status) => {
@@ -206,8 +209,28 @@ const getStatusClass = (status) => {
     return "delivery";
   }
 
-  return "processing";
+  if (status === "Product Processing") {
+    return "processing";
+  }
+
+  if (status === "Paid") {
+    return "paid";
+  }
+
+  return "other";
 };
+
+// ==========================================
+// ORDER DELETION ELIGIBILITY
+// ==========================================
+
+// Match the backend's protection for paid and online orders.
+// The dashboard additionally requires delivery to be complete.
+// This is a UI safeguard; the backend remains authoritative.
+const canDeleteOrder = (order) =>
+  order.status === "Delivered" &&
+  order.paymentMethod === "CashOnDelivery" &&
+  order.payment !== true;
 
 // ==========================================
 // MAIN ORDERS COMPONENT
@@ -228,11 +251,11 @@ const Orders = ({ url }) => {
   const [statusFilter, setStatusFilter] =
     useState("All");
 
-  const [updatingId, setUpdatingId] = useState(null);
+  const [updatingId, setUpdatingId] =
+    useState(null);
 
-  const [deletingId, setDeletingId] = useState(null);
-
-  // Prevent overlapping automatic refresh requests
+  const [deletingId, setDeletingId] =
+    useState(null);
 
   const requestInProgress = useRef(false);
 
@@ -249,17 +272,22 @@ const Orders = ({ url }) => {
       if (requestInProgress.current) return;
 
       if (!API_URL) {
-        setError("Backend API URL is not configured.");
+        setError(
+          "Backend API URL is not configured."
+        );
+
         setLoading(false);
         return;
       }
 
-      const token = localStorage.getItem("adminToken");
+      const token =
+        localStorage.getItem("adminToken");
 
       if (!token) {
         setError(
           "Admin session not found. Please sign in again."
         );
+
         setLoading(false);
         return;
       }
@@ -282,34 +310,30 @@ const Orders = ({ url }) => {
         );
 
         if (
-          response.data?.success &&
-          Array.isArray(response.data.data)
+          !response.data?.success ||
+          !Array.isArray(response.data.data)
         ) {
-          setOrders(response.data.data);
-
-          setError("");
-        } else {
           throw new Error(
             response.data?.message ||
               "Unable to load orders."
           );
         }
+
+        setOrders(response.data.data);
+
+        setError("");
       } catch (err) {
         console.error(
           "Order fetch failed:",
           err.message
         );
 
-        if (err.response?.status === 401) {
-          setError(
-            "Your admin session has expired. Please sign in again."
-          );
-        } else {
-          setError(
-            err.response?.data?.message ||
-              "Unable to retrieve orders. Please try again."
-          );
-        }
+        setError(
+          err.response?.status === 401
+            ? "Your admin session has expired. Please sign in again."
+            : err.response?.data?.message ||
+                "Unable to retrieve orders. Please try again."
+        );
       } finally {
         requestInProgress.current = false;
 
@@ -326,11 +350,13 @@ const Orders = ({ url }) => {
   useEffect(() => {
     fetchAllOrders();
 
-    // Refresh quietly every 20 seconds.
-    // This avoids constantly flashing the loading screen.
+    // Refresh quietly every 20 seconds
+    // when the browser page is visible.
 
     const interval = window.setInterval(() => {
-      if (document.visibilityState === "visible") {
+      if (
+        document.visibilityState === "visible"
+      ) {
         fetchAllOrders({
           silent: true,
         });
@@ -346,9 +372,13 @@ const Orders = ({ url }) => {
   // ORDER STATISTICS
   // ========================================
 
-  const statistics = useMemo(() => {
-    return {
+  const statistics = useMemo(
+    () => ({
       total: orders.length,
+
+      paid: orders.filter(
+        (order) => order.status === "Paid"
+      ).length,
 
       processing: orders.filter(
         (order) =>
@@ -364,15 +394,41 @@ const Orders = ({ url }) => {
         (order) =>
           order.status === "Delivered"
       ).length,
-    };
-  }, [orders]);
+    }),
+    [orders]
+  );
+
+  // ========================================
+  // AVAILABLE STATUS FILTERS
+  // ========================================
+
+  // Include Paid and other statuses returned
+  // by the backend in the filter.
+  //
+  // This does not make those statuses
+  // available as update actions.
+
+  const availableStatusFilters = useMemo(
+    () =>
+      Array.from(
+        new Set([
+          "Paid",
+          ...DELIVERY_STATUSES,
+          ...orders
+            .map((order) => order.status)
+            .filter(Boolean),
+        ])
+      ),
+    [orders]
+  );
 
   // ========================================
   // SEARCH AND FILTER ORDERS
   // ========================================
 
   const filteredOrders = useMemo(() => {
-    const query = searchTerm.trim().toLowerCase();
+    const query =
+      searchTerm.trim().toLowerCase();
 
     return orders.filter((order) => {
       const address = order.address || {};
@@ -394,7 +450,8 @@ const Orders = ({ url }) => {
         .toLowerCase();
 
       const matchesSearch =
-        !query || searchableText.includes(query);
+        !query ||
+        searchableText.includes(query);
 
       const matchesPayment =
         paymentFilter === "All" ||
@@ -418,18 +475,27 @@ const Orders = ({ url }) => {
   ]);
 
   // ========================================
-  // UPDATE DELIVERY STATUS
+  // UPDATE ORDER STATUS
   // ========================================
 
-  const statusHandler = async (orderId, newStatus) => {
+  const statusHandler = async (
+    orderId,
+    newStatus
+  ) => {
     if (updatingId || deletingId) return;
 
-    if (!ORDER_STATUSES.includes(newStatus)) {
-      toast.error("Invalid delivery status.");
+    if (
+      !DELIVERY_STATUSES.includes(newStatus)
+    ) {
+      toast.error(
+        "Invalid order status selection."
+      );
+
       return;
     }
 
-    const token = localStorage.getItem("adminToken");
+    const token =
+      localStorage.getItem("adminToken");
 
     if (!token) {
       toast.error("Please sign in again.");
@@ -454,14 +520,17 @@ const Orders = ({ url }) => {
       );
 
       if (response.data?.success) {
-        toast.success("Order status updated!");
-
-        // Update the displayed order immediately
+        toast.success(
+          "Order status updated!"
+        );
 
         setOrders((previous) =>
           previous.map((order) =>
             order._id === orderId
-              ? { ...order, status: newStatus }
+              ? {
+                  ...order,
+                  status: newStatus,
+                }
               : order
           )
         );
@@ -487,24 +556,26 @@ const Orders = ({ url }) => {
   };
 
   // ========================================
-  // DELETE A DELIVERED ORDER
+  // DELETE DELIVERED ORDER
   // ========================================
 
   const deleteOrder = async (order) => {
     if (deletingId || updatingId) return;
 
-    // Keep the existing rule:
-    // Only delivered orders can be deleted here.
+    // Only unpaid, delivered Cash on Delivery orders
+    // may be deleted from this dashboard.
 
-    if (order.status !== "Delivered") {
+    if (!canDeleteOrder(order)) {
       toast.error(
-        "Only delivered orders can be deleted."
+        "Only unpaid, delivered Cash on Delivery orders can be deleted."
       );
+
       return;
     }
 
     const customerName =
-      order.address?.recipientName || "this customer";
+      order.address?.recipientName ||
+      "this customer";
 
     const confirmed = window.confirm(
       `Permanently delete the delivered order for ${customerName}?\n\nThis action cannot be undone and may remove important order records.`
@@ -512,7 +583,8 @@ const Orders = ({ url }) => {
 
     if (!confirmed) return;
 
-    const token = localStorage.getItem("adminToken");
+    const token =
+      localStorage.getItem("adminToken");
 
     if (!token) {
       toast.error("Please sign in again.");
@@ -535,11 +607,14 @@ const Orders = ({ url }) => {
       );
 
       if (response.data?.success) {
-        toast.success("Order deleted successfully.");
+        toast.success(
+          "Order deleted successfully."
+        );
 
         setOrders((previous) =>
           previous.filter(
-            (item) => item._id !== order._id
+            (item) =>
+              item._id !== order._id
           )
         );
       } else {
@@ -564,7 +639,7 @@ const Orders = ({ url }) => {
   };
 
   // ========================================
-  // CLEAR ALL FILTERS
+  // CLEAR SEARCH FILTERS
   // ========================================
 
   const clearFilters = () => {
@@ -574,31 +649,68 @@ const Orders = ({ url }) => {
   };
 
   // ========================================
-  // PAGE
+  // STATISTICS CARD CONFIGURATION
+  // ========================================
+
+  const statCards = [
+    {
+      title: "Total Orders",
+      count: statistics.total,
+      description: "Customer orders received",
+      icon: "box",
+      color: "red",
+    },
+    {
+      title: "Paid Status",
+      count: statistics.paid,
+      description: "Orders currently marked Paid",
+      icon: "card",
+      color: "gold",
+    },
+    {
+      title: "Processing",
+      count: statistics.processing,
+      description: "Orders being prepared",
+      icon: "clock",
+      color: "gold",
+    },
+    {
+      title: "Out for Delivery",
+      count: statistics.delivery,
+      description: "Orders on their way",
+      icon: "truck",
+      color: "blue",
+    },
+    {
+      title: "Delivered",
+      count: statistics.delivered,
+      description: "Completed deliveries",
+      icon: "check",
+      color: "green",
+    },
+  ];
+
+  // ========================================
+  // MAIN PAGE
   // ========================================
 
   return (
     <div className="orders-page">
 
-      {/* ====================================
-          PAGE HEADER
-      ==================================== */}
+      {/* PAGE HEADER */}
 
       <div className="orders-page-header">
-
         <div className="orders-page-heading">
-
           <span className="orders-eyebrow">
-            SALES & ORDER MANAGEMENT
+            SALES &amp; ORDER MANAGEMENT
           </span>
 
           <h1>Manage Orders</h1>
 
           <p>
-            Monitor purchases, review customer details,
-            and manage product deliveries.
+            Monitor purchases, review customer
+            details, and manage product deliveries.
           </p>
-
         </div>
 
         <button
@@ -610,10 +722,11 @@ const Orders = ({ url }) => {
           <Icon name="refresh" size={18} />
 
           <span>
-            {loading ? "Refreshing..." : "Refresh"}
+            {loading
+              ? "Refreshing..."
+              : "Refresh"}
           </span>
         </button>
-
       </div>
 
       {/* ====================================
@@ -621,87 +734,29 @@ const Orders = ({ url }) => {
       ==================================== */}
 
       <div className="orders-stats-grid">
+        {statCards.map((card) => (
+          <div
+            className="orders-stat-card"
+            key={card.title}
+          >
+            <div
+              className={`orders-stat-icon ${card.color}`}
+            >
+              <Icon
+                name={card.icon}
+                size={25}
+              />
+            </div>
 
-        {/* TOTAL ORDERS */}
+            <div className="orders-stat-details">
+              <span>{card.title}</span>
 
-        <div className="orders-stat-card">
+              <strong>{card.count}</strong>
 
-          <div className="orders-stat-icon red">
-            <Icon name="box" size={25} />
+              <p>{card.description}</p>
+            </div>
           </div>
-
-          <div className="orders-stat-details">
-
-            <span>Total Orders</span>
-
-            <strong>{statistics.total}</strong>
-
-            <p>Customer orders received</p>
-
-          </div>
-
-        </div>
-
-        {/* PROCESSING */}
-
-        <div className="orders-stat-card">
-
-          <div className="orders-stat-icon gold">
-            <Icon name="clock" size={25} />
-          </div>
-
-          <div className="orders-stat-details">
-
-            <span>Processing</span>
-
-            <strong>{statistics.processing}</strong>
-
-            <p>Orders being prepared</p>
-
-          </div>
-
-        </div>
-
-        {/* OUT FOR DELIVERY */}
-
-        <div className="orders-stat-card">
-
-          <div className="orders-stat-icon blue">
-            <Icon name="truck" size={25} />
-          </div>
-
-          <div className="orders-stat-details">
-
-            <span>Out for Delivery</span>
-
-            <strong>{statistics.delivery}</strong>
-
-            <p>Orders on their way</p>
-
-          </div>
-
-        </div>
-
-        {/* DELIVERED */}
-
-        <div className="orders-stat-card">
-
-          <div className="orders-stat-icon green">
-            <Icon name="check" size={25} />
-          </div>
-
-          <div className="orders-stat-details">
-
-            <span>Delivered</span>
-
-            <strong>{statistics.delivered}</strong>
-
-            <p>Completed deliveries</p>
-
-          </div>
-
-        </div>
-
+        ))}
       </div>
 
       {/* ====================================
@@ -713,9 +768,7 @@ const Orders = ({ url }) => {
         {/* MANAGEMENT HEADER */}
 
         <div className="orders-management-header">
-
           <div>
-
             <span className="orders-section-label">
               CUSTOMER PURCHASES
             </span>
@@ -723,16 +776,14 @@ const Orders = ({ url }) => {
             <h2>All Customer Orders</h2>
 
             <p>
-              Review orders and update their delivery
+              Review orders and update their
               progress.
             </p>
-
           </div>
 
           <span className="orders-count-badge">
             {orders.length} Orders
           </span>
-
         </div>
 
         {/* ==================================
@@ -744,8 +795,10 @@ const Orders = ({ url }) => {
           {/* SEARCH */}
 
           <div className="orders-search-wrapper">
-
-            <Icon name="search" size={19} />
+            <Icon
+              name="search"
+              size={19}
+            />
 
             <input
               type="search"
@@ -756,13 +809,11 @@ const Orders = ({ url }) => {
               }
               aria-label="Search orders"
             />
-
           </div>
 
           {/* PAYMENT FILTER */}
 
           <div className="orders-filter-group">
-
             <label htmlFor="orders-payment-filter">
               Payment
             </label>
@@ -785,15 +836,12 @@ const Orders = ({ url }) => {
               <option value="Online">
                 Online (Paystack)
               </option>
-
             </select>
-
           </div>
 
-          {/* STATUS FILTER */}
+          {/* ORDER STATUS FILTER */}
 
           <div className="orders-filter-group">
-
             <label htmlFor="orders-status-filter">
               Status
             </label>
@@ -809,32 +857,29 @@ const Orders = ({ url }) => {
                 All Statuses
               </option>
 
-              {ORDER_STATUSES.map((status) => (
-                <option
-                  key={status}
-                  value={status}
-                >
-                  {status}
-                </option>
-              ))}
-
+              {availableStatusFilters.map(
+                (status) => (
+                  <option
+                    key={status}
+                    value={status}
+                  >
+                    {status}
+                  </option>
+                )
+              )}
             </select>
-
           </div>
-
         </div>
 
         {/* ==================================
-            LOAD / ERROR / EMPTY STATES
+            LOADING STATE
         ================================== */}
 
         {loading && orders.length === 0 ? (
-
           <div
             className="orders-state"
             role="status"
           >
-
             <div className="orders-loading-spinner" />
 
             <h3>Loading Orders</h3>
@@ -842,14 +887,16 @@ const Orders = ({ url }) => {
             <p>
               Retrieving customer orders...
             </p>
-
           </div>
-
         ) : error && orders.length === 0 ? (
 
-          <div className="orders-state orders-error-state">
+          /* ERROR STATE */
 
-            <Icon name="box" size={40} />
+          <div className="orders-state orders-error-state">
+            <Icon
+              name="box"
+              size={40}
+            />
 
             <h3>Unable to Load Orders</h3>
 
@@ -861,14 +908,12 @@ const Orders = ({ url }) => {
             >
               Try Again
             </button>
-
           </div>
 
         ) : (
-
           <>
 
-            {/* REFRESH ERROR MESSAGE */}
+            {/* REFRESH ERROR */}
 
             {error && (
               <div
@@ -879,12 +924,17 @@ const Orders = ({ url }) => {
               </div>
             )}
 
+            {/* ==================================
+                EMPTY STATE
+            ================================== */}
+
             {filteredOrders.length === 0 ? (
-
               <div className="orders-state orders-empty-state">
-
                 <div className="orders-empty-icon">
-                  <Icon name="box" size={35} />
+                  <Icon
+                    name="box"
+                    size={35}
+                  />
                 </div>
 
                 <h3>
@@ -907,29 +957,31 @@ const Orders = ({ url }) => {
                     Clear Filters
                   </button>
                 )}
-
               </div>
-
             ) : (
 
-              /* ============================
+              /* ==================================
                   ORDER CARDS
-              ============================ */
+              ================================== */
 
               <div className="orders-list">
 
                 {filteredOrders.map((order) => {
-                  const address = order.address || {};
+                  const address =
+                    order.address || {};
 
-                  const items = Array.isArray(order.items)
-                    ? order.items
-                    : [];
+                  const items =
+                    Array.isArray(order.items)
+                      ? order.items
+                      : [];
 
-                  const totalUnits = items.reduce(
-                    (total, item) =>
-                      total + (Number(item.quantity) || 0),
-                    0
-                  );
+                  const totalUnits =
+                    items.reduce(
+                      (total, item) =>
+                        total +
+                        (Number(item.quantity) || 0),
+                      0
+                    );
 
                   const isUpdating =
                     updatingId === order._id;
@@ -938,11 +990,12 @@ const Orders = ({ url }) => {
                     deletingId === order._id;
 
                   const isBusy =
-                    Boolean(updatingId || deletingId);
+                    Boolean(
+                      updatingId || deletingId
+                    );
 
-                  const statusClass = getStatusClass(
-                    order.status
-                  );
+                  const statusClass =
+                    getStatusClass(order.status);
 
                   const deliveryAddress = [
                     address.street,
@@ -953,32 +1006,34 @@ const Orders = ({ url }) => {
                     .filter(Boolean)
                     .join(", ");
 
-                  const orderDate = formatDate(
-                    order.date || order.createdAt
-                  );
+                  const orderDate =
+                    formatDate(
+                      order.date ||
+                      order.createdAt
+                    );
 
                   return (
                     <article
                       key={order._id}
                       className={`orders-card ${
-                        isDeleting ? "orders-deleting" : ""
+                        isDeleting
+                          ? "orders-deleting"
+                          : ""
                       }`}
                     >
 
-                      {/* ======================
-                          ORDER CARD HEADER
-                      ====================== */}
+                      {/* ORDER HEADER */}
 
                       <div className="orders-card-header">
-
                         <div className="orders-card-title">
-
                           <div className="orders-card-icon">
-                            <Icon name="box" size={23} />
+                            <Icon
+                              name="box"
+                              size={23}
+                            />
                           </div>
 
                           <div>
-
                             <span className="orders-card-label">
                               CUSTOMER ORDER
                             </span>
@@ -991,10 +1046,10 @@ const Orders = ({ url }) => {
                             {orderDate && (
                               <p>{orderDate}</p>
                             )}
-
                           </div>
-
                         </div>
+
+                        {/* STATUS BADGE */}
 
                         <span
                           className={`orders-status-badge ${statusClass}`}
@@ -1004,21 +1059,22 @@ const Orders = ({ url }) => {
                           {order.status ||
                             "Status unavailable"}
                         </span>
-
                       </div>
 
-                      {/* ======================
-                          ORDER MAIN CONTENT
-                      ====================== */}
+                      {/* ==================================
+                          ORDER INFORMATION
+                      ================================== */}
 
                       <div className="orders-card-content">
 
                         {/* CUSTOMER INFORMATION */}
 
                         <div className="orders-info-section">
-
                           <h4>
-                            <Icon name="user" size={17} />
+                            <Icon
+                              name="user"
+                              size={17}
+                            />
 
                             Customer Information
                           </h4>
@@ -1027,27 +1083,34 @@ const Orders = ({ url }) => {
                             <span>Name</span>
 
                             <strong>
-                              {address.recipientName || "N/A"}
+                              {address.recipientName ||
+                                "N/A"}
                             </strong>
                           </div>
 
                           <div className="orders-info-row">
-
                             <span>
-                              <Icon name="phone" size={15} />
+                              <Icon
+                                name="phone"
+                                size={15}
+                              />
+
                               Phone
                             </span>
 
                             <strong>
-                              {address.phone || "N/A"}
+                              {address.phone ||
+                                "N/A"}
                             </strong>
-
                           </div>
 
                           <div className="orders-address-block">
-
                             <span>
-                              <Icon name="location" size={16} />
+                              <Icon
+                                name="location"
+                                size={16}
+                              />
+
                               Delivery Address
                             </span>
 
@@ -1055,76 +1118,79 @@ const Orders = ({ url }) => {
                               {deliveryAddress ||
                                 "Address unavailable"}
                             </p>
-
                           </div>
-
                         </div>
 
                         {/* PURCHASED PRODUCTS */}
 
                         <div className="orders-info-section">
-
                           <h4>
-                            <Icon name="box" size={17} />
+                            <Icon
+                              name="box"
+                              size={17}
+                            />
 
                             Purchased Products
                           </h4>
 
                           <div className="orders-products-list">
+                            {items.map(
+                              (item, index) => (
+                                <div
+                                  key={`${order._id}-${index}`}
+                                  className="orders-product-item"
+                                >
+                                  <div className="orders-product-icon">
+                                    <Icon
+                                      name="box"
+                                      size={17}
+                                    />
+                                  </div>
 
-                            {items.map((item, index) => (
-                              <div
-                                key={index}
-                                className="orders-product-item"
-                              >
+                                  <div className="orders-product-details">
+                                    <strong>
+                                      {item.name ||
+                                        "Product"}
+                                    </strong>
 
-                                <div className="orders-product-icon">
-                                  <Icon name="box" size={17} />
+                                    {item.description && (
+                                      <p>
+                                        {item.description}
+                                      </p>
+                                    )}
+                                  </div>
+
+                                  <span className="orders-product-quantity">
+                                    ×
+                                    {item.quantity ||
+                                      1}
+                                  </span>
                                 </div>
-
-                                <div className="orders-product-details">
-
-                                  <strong>
-                                    {item.name || "Product"}
-                                  </strong>
-
-                                  {item.description && (
-                                    <p>
-                                      {item.description}
-                                    </p>
-                                  )}
-
-                                </div>
-
-                                <span className="orders-product-quantity">
-                                  ×{item.quantity || 1}
-                                </span>
-
-                              </div>
-                            ))}
+                              )
+                            )}
 
                             {items.length === 0 && (
                               <p className="orders-no-items">
-                                No product details available.
+                                No product details
+                                available.
                               </p>
                             )}
-
                           </div>
-
                         </div>
-
                       </div>
 
-                      {/* ======================
-                          ORDER PAYMENT SUMMARY
-                      ====================== */}
+                      {/* ==================================
+                          PAYMENT SUMMARY
+                      ================================== */}
 
                       <div className="orders-payment-summary">
-
                         <div className="orders-payment-detail">
-
                           <span>
-                            <Icon name="card" size={16} />
+                            <Icon
+                              name="card"
+                              size={16}
+                            />
+
                             Payment Method
                           </span>
 
@@ -1133,49 +1199,53 @@ const Orders = ({ url }) => {
                               order.paymentMethod
                             )}
                           </strong>
-
                         </div>
 
                         <div className="orders-payment-detail">
-
-                          <span>Items Ordered</span>
+                          <span>
+                            Items Ordered
+                          </span>
 
                           <strong>
                             {totalUnits} Units
                           </strong>
-
                         </div>
 
                         <div className="orders-payment-detail amount">
-
-                          <span>Order Amount</span>
+                          <span>
+                            Order Amount
+                          </span>
 
                           <strong>
-                            {formatPrice(order.amount)}
+                            {formatPrice(
+                              order.amount
+                            )}
                           </strong>
-
                         </div>
-
                       </div>
 
-                      {/* ======================
-                          ORDER ACTIONS
-                      ====================== */}
+                      {/* ==================================
+                          ORDER STATUS ACTIONS
+                      ================================== */}
 
                       <div className="orders-card-footer">
 
                         <div className="orders-status-control">
 
+                          {/* UPDATED LABEL */}
+
                           <label
                             htmlFor={`order-status-${order._id}`}
                           >
-                            Delivery Status
+                            Order Status
                           </label>
 
                           <select
                             id={`order-status-${order._id}`}
                             className={`orders-status-select ${statusClass}`}
-                            value={order.status || ""}
+                            value={
+                              order.status || ""
+                            }
                             onChange={(event) =>
                               statusHandler(
                                 order._id,
@@ -1185,24 +1255,38 @@ const Orders = ({ url }) => {
                             disabled={isBusy}
                           >
 
+                            {/* Preserve existing
+                                Paid or other statuses */}
+
                             {order.status &&
-                              !ORDER_STATUSES.includes(
+                              !DELIVERY_STATUSES.includes(
                                 order.status
                               ) && (
-                                <option value={order.status}>
+                                <option
+                                  value={order.status}
+                                >
                                   {order.status}
                                 </option>
                               )}
 
-                            {ORDER_STATUSES.map((status) => (
-                              <option
-                                key={status}
-                                value={status}
-                              >
-                                {status}
+                            {!order.status && (
+                              <option value="">
+                                Select a status
                               </option>
-                            ))}
+                            )}
 
+                            {/* Delivery stages */}
+
+                            {DELIVERY_STATUSES.map(
+                              (status) => (
+                                <option
+                                  key={status}
+                                  value={status}
+                                >
+                                  {status}
+                                </option>
+                              )
+                            )}
                           </select>
 
                           {isUpdating && (
@@ -1210,12 +1294,11 @@ const Orders = ({ url }) => {
                               Updating status...
                             </span>
                           )}
-
                         </div>
 
-                        {/* DELETE ONLY DELIVERED ORDERS */}
+                        {/* DELETE UNPAID DELIVERED COD ORDERS ONLY */}
 
-                        {order.status === "Delivered" && (
+                        {canDeleteOrder(order) && (
                           <button
                             type="button"
                             className="orders-delete-btn"
@@ -1224,39 +1307,33 @@ const Orders = ({ url }) => {
                             }
                             disabled={isBusy}
                           >
-
-                            <Icon name="delete" size={17} />
+                            <Icon
+                              name="delete"
+                              size={17}
+                            />
 
                             <span>
                               {isDeleting
                                 ? "Deleting..."
                                 : "Delete Order"}
                             </span>
-
                           </button>
                         )}
-
                       </div>
-
                     </article>
                   );
                 })}
-
               </div>
-
             )}
-
           </>
-
         )}
 
         {/* ==================================
-            ORDERS FOOTER
+            MANAGEMENT FOOTER
         ================================== */}
 
         {!loading && (
           <div className="orders-management-footer">
-
             <p>
               Showing{" "}
               <strong>
@@ -1272,12 +1349,9 @@ const Orders = ({ url }) => {
             <span>
               RIDWAN BUSINESS • ORDER MANAGEMENT
             </span>
-
           </div>
         )}
-
       </section>
-
     </div>
   );
 };

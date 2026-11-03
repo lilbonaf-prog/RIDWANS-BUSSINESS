@@ -1,47 +1,136 @@
 import express from "express";
 import multer from "multer";
-import { CloudinaryStorage } from "multer-storage-cloudinary";   // ✅ correct import
+
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+
 import cloudinary from "../config/cloudinary.js";
 
+// Product controllers
 import {
   addProduct,
   listProduct,
   removeProduct,
-  updateProduct
+  updateProduct,
 } from "../controllers/productController.js";
+
+// Administrator authentication
+import adminAuth from "../middleware/adminAuth.js";
+
+// ==========================================
+// RIDWAN BUSINESS
+// SECURE PRODUCT MANAGEMENT ROUTES
+// ==========================================
 
 const productRouter = express.Router();
 
-// Cloudinary storage
+// ==========================================
+// CLOUDINARY STORAGE CONFIGURATION
+// ==========================================
+
 const storage = new CloudinaryStorage({
   cloudinary,
+
   params: {
     folder: "products",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"]
-  }
+
+    allowed_formats: [
+      "jpg",
+      "jpeg",
+      "png",
+      "webp",
+    ],
+  },
 });
 
-// Multer with Cloudinary storage
-const upload = multer({ storage });
+// ==========================================
+// MULTER CONFIGURATION
+// ==========================================
 
-// Upload middleware with error handling
+const upload = multer({
+  storage,
+});
+
+// ==========================================
+// IMAGE UPLOAD MIDDLEWARE
+// ==========================================
+
 const uploadMiddleware = (req, res, next) => {
-  upload.single("image")(req, res, function (error) {
-    if (error) {
-      console.error("========== MULTER/CLOUDINARY ERROR ==========");
-      console.error("FULL:", error);
-      console.error("MESSAGE:", error.message);
-      console.error("============================================");
-      return res.status(500).json({ success: false, message: error.message });
+  upload.single("image")(
+    req,
+    res,
+    function (error) {
+      if (error) {
+        console.error(
+          "Product image upload failed:",
+          error.message
+        );
+
+        return res.status(500).json({
+          success: false,
+          message: "Unable to upload product image.",
+        });
+      }
+
+      next();
     }
-    next();
-  });
+  );
 };
 
-// ROUTES
-productRouter.post("/add", uploadMiddleware, addProduct);
-productRouter.get("/list", listProduct);
-productRouter.post("/remove", removeProduct);
-productRouter.put("/update/:id", uploadMiddleware, updateProduct);
+// ==========================================
+// 1. PUBLIC: VIEW PRODUCTS
+// ==========================================
+
+// Customers can view available products
+// without administrator authentication.
+
+productRouter.get(
+  "/list",
+  listProduct
+);
+
+// ==========================================
+// 2. ADMIN: ADD PRODUCT
+// ==========================================
+
+// Verify administrator before allowing
+// image uploads or product creation.
+
+productRouter.post(
+  "/add",
+  adminAuth,
+  uploadMiddleware,
+  addProduct
+);
+
+// ==========================================
+// 3. ADMIN: UPDATE PRODUCT
+// ==========================================
+
+// Only administrators can update product
+// information or replace product images.
+
+productRouter.put(
+  "/update/:id",
+  adminAuth,
+  uploadMiddleware,
+  updateProduct
+);
+
+// ==========================================
+// 4. ADMIN: REMOVE PRODUCT
+// ==========================================
+
+// Only administrators can remove products
+// from the database.
+
+productRouter.post(
+  "/remove",
+  adminAuth,
+  removeProduct
+);
+
+// ==========================================
+// EXPORT PRODUCT ROUTER
+// ==========================================
 
 export default productRouter;

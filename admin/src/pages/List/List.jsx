@@ -443,6 +443,21 @@ const List = ({ url }) => {
       return;
     }
 
+    // Product updates require the existing admin login token.
+    const token = localStorage.getItem("adminToken");
+
+    if (!token) {
+      toast.error(
+        "Administrator session not found. Please log in again."
+      );
+      return;
+    }
+
+    if (!API_URL) {
+      toast.error("Backend API URL is not configured.");
+      return;
+    }
+
     try {
       setSaving(true);
 
@@ -469,6 +484,9 @@ const List = ({ url }) => {
         )}`,
         form,
         {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           timeout: 90000,
         }
       );
@@ -494,10 +512,24 @@ const List = ({ url }) => {
         err.message
       );
 
-      toast.error(
-        err.response?.data?.message ||
-          "Unable to update product."
-      );
+      if (err.response?.status === 401) {
+        toast.error(
+          "Your administrator session has expired. Please log in again."
+        );
+      } else if (err.response?.status === 403) {
+        toast.error(
+          "Access denied. Administrator permission is required."
+        );
+      } else if (err.code === "ECONNABORTED") {
+        toast.error(
+          "The server took too long to respond. Please try again."
+        );
+      } else {
+        toast.error(
+          err.response?.data?.message ||
+            "Unable to update product."
+        );
+      }
     } finally {
       setSaving(false);
     }
@@ -508,7 +540,22 @@ const List = ({ url }) => {
   // ========================================
 
   const removeProduct = async (item) => {
-    if (deletingId) return;
+    if (deletingId || saving) return;
+
+    // Product removal requires an authenticated administrator.
+    const token = localStorage.getItem("adminToken");
+
+    if (!token) {
+      toast.error(
+        "Administrator session not found. Please log in again."
+      );
+      return;
+    }
+
+    if (!API_URL) {
+      toast.error("Backend API URL is not configured.");
+      return;
+    }
 
     // Avoid accidental removal of live products
 
@@ -527,6 +574,9 @@ const List = ({ url }) => {
           id: item._id,
         },
         {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           timeout: 90000,
         }
       );
@@ -554,10 +604,24 @@ const List = ({ url }) => {
         err.message
       );
 
-      toast.error(
-        err.response?.data?.message ||
-          "Unable to remove product."
-      );
+      if (err.response?.status === 401) {
+        toast.error(
+          "Your administrator session has expired. Please log in again."
+        );
+      } else if (err.response?.status === 403) {
+        toast.error(
+          "Access denied. Administrator permission is required."
+        );
+      } else if (err.code === "ECONNABORTED") {
+        toast.error(
+          "The server took too long to respond. Please try again."
+        );
+      } else {
+        toast.error(
+          err.response?.data?.message ||
+            "Unable to remove product."
+        );
+      }
     } finally {
       setDeletingId(null);
     }
@@ -881,7 +945,7 @@ const List = ({ url }) => {
                           type="button"
                           className="list-edit-btn"
                           onClick={() => startEdit(item)}
-                          disabled={Boolean(deletingId)}
+                          disabled={Boolean(deletingId || saving)}
                         >
                           <Icon
                             name="edit"
@@ -897,7 +961,7 @@ const List = ({ url }) => {
                           onClick={() =>
                             removeProduct(item)
                           }
-                          disabled={Boolean(deletingId)}
+                          disabled={Boolean(deletingId || saving)}
                         >
                           <Icon
                             name="delete"

@@ -1735,3 +1735,84 @@
     animation: none;
   }
 }
+
+/* ==========================================
+   RIDWAN BUSINESS
+   FINAL ORDER DASHBOARD IMPROVEMENTS
+========================================== */
+
+/* ==========================================
+   FIVE STATISTICS CARDS
+========================================== */
+
+.orders-stats-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Five columns on large desktop screens */
+
+@media (min-width: 1600px) {
+  .orders-stats-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* Two columns on tablets */
+
+@media (max-width: 1350px) {
+  .orders-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* One column on mobile */
+
+@media (max-width: 700px) {
+  .orders-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================
+   PAID ORDER STATUS BADGE
+========================================== */
+
+.orders-status-badge.paid {
+  background: #fff8eb;
+  border-color: #f3e4c6;
+  color: #926315;
+}
+
+.orders-status-badge.paid .orders-status-dot {
+  background: #d9af62;
+}
+
+/* ==========================================
+   PAID ORDER STATUS DROPDOWN
+========================================== */
+
+.orders-status-select.paid {
+  background: #fff8eb;
+  border-color: #f3e4c6;
+  color: #926315;
+}
+
+/* ==========================================
+   OTHER ORDER STATUSES
+========================================== */
+
+.orders-status-badge.other {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #525866;
+}
+
+.orders-status-badge.other .orders-status-dot {
+  background: #9ca3af;
+}
+
+.orders-status-select.other {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #525866;
+}

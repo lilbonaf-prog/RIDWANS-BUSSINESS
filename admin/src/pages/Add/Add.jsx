@@ -174,10 +174,29 @@ const Add = ({ url }) => {
       return;
     }
 
+    // ========================================
+    // VERIFY ADMINISTRATOR SESSION
+    // ========================================
+
+    // Require an authenticated administrator before uploading.
+    // The backend independently verifies the JWT and admin role.
+
+    const token = localStorage.getItem("adminToken");
+
+    if (!token) {
+      toast.error(
+        "Administrator session not found. Please log in again."
+      );
+
+      return;
+    }
+
     try {
       setLoading(true);
 
-      // Prepare product information
+      // ========================================
+      // PREPARE PRODUCT DATA
+      // ========================================
 
       const formData = new FormData();
 
@@ -194,17 +213,27 @@ const Add = ({ url }) => {
 
       formData.append("image", image);
 
-      // Upload product using existing API
+      // ========================================
+      // SECURE PRODUCT UPLOAD
+      // ========================================
+
+      // Send the administrator JWT.
+      // The browser handles multipart form boundaries.
 
       const response = await axios.post(
         `${url.replace(/\/+$/, "")}/api/product/add`,
         formData,
         {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           timeout: 90000,
         }
       );
 
-      // Check backend response
+      // ========================================
+      // CHECK BACKEND RESPONSE
+      // ========================================
 
       if (response.data?.success) {
         toast.success("Product added successfully!");
@@ -224,9 +253,21 @@ const Add = ({ url }) => {
         error.response?.data || error.message
       );
 
-      if (error.code === "ECONNABORTED") {
+      // ========================================
+      // AUTHENTICATION ERRORS
+      // ========================================
+
+      if (error.response?.status === 401) {
         toast.error(
-          "The server took too long to respond."
+          "Your administrator session has expired. Please log in again."
+        );
+      } else if (error.response?.status === 403) {
+        toast.error(
+          "Access denied. Administrator permission is required."
+        );
+      } else if (error.code === "ECONNABORTED") {
+        toast.error(
+          "The server took too long to respond. Please try again."
         );
       } else {
         toast.error(
